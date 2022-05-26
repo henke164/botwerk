@@ -1,7 +1,10 @@
 <script setup>
-import { nextTick } from "vue";
 import NewProfileSvg from "./icons/new-profile.svg";
-import ProfileSvg from "./icons/profile.svg";
+import ArrowRightSvg from "./icons/arrow-right.svg";
+import ArrowDownSvg from "./icons/arrow-down.svg";
+import BlueprintSvg from "./icons/blueprint.svg";
+import CogwheelSvg from "./icons/cogwheel.svg";
+import CubeSvg from "./icons/cube.svg";
 
 import NewProfileInput from "./components/NewProfileInput.vue";
 </script>
@@ -11,8 +14,40 @@ export default {
   props: ["setAvailableViews"],
   data() {
     return {
-      profiles: ["Default"],
-      selectedProfile: null,
+      profiles: [
+        {
+          id: "abc123",
+          name: "Default",
+          modellers: {
+            expanded: false,
+            content: [
+              {
+                id: 124324,
+                name: "a",
+              },
+            ],
+          },
+          actions: {
+            expanded: false,
+            content: [
+              {
+                id: 124324,
+                name: "a",
+              },
+            ],
+          },
+          objects: {
+            expanded: false,
+            content: [
+              {
+                id: 124324,
+                name: "a",
+              },
+            ],
+          },
+          expanded: false,
+        },
+      ],
       showNewProfileInput: false,
       newProfileInputError: null,
     };
@@ -29,16 +64,41 @@ export default {
       }
 
       this.showNewProfileInput = false;
-      this.profiles.push(name);
+      this.profiles.push({
+        id: "abc123",
+        name,
+        modellers: {
+          expanded: false,
+          content: [],
+        },
+        actions: {
+          expanded: false,
+          content: [
+            {
+              id: 124324,
+              name: "a",
+            },
+          ],
+        },
+        objects: {
+          expanded: false,
+          content: [
+            {
+              id: 124324,
+              name: "a",
+            },
+          ],
+        },
+        expanded: false,
+      });
     },
-    selectProfile(profile) {
-      this.selectedProfile = profile;
-      this.setAvailableViews([0, 1]);
+    expandItem(item) {
+      item.expanded = !item.expanded;
     },
   },
   mounted() {
-      this.setAvailableViews([]);
-  }
+    this.setAvailableViews([]);
+  },
 };
 </script>
 
@@ -55,18 +115,63 @@ export default {
     </div>
     <div class="profiles">
       <div v-for="profile in profiles" v-bind:key="profile">
-        <span class="icon" :style="`background-image: url(${ProfileSvg})`"></span>
-        <a
-          class="profile-name"
-          :class="selectedProfile === profile ? 'selected' : ''"
-          v-on:click="selectProfile(profile)"
-        >{{profile}}</a>
+        <a class="list-item">
+          <span
+            class="icon"
+            :style="`background-image: url(${
+              profile.expanded ? ArrowDownSvg : ArrowRightSvg
+            })`"
+          ></span>
+          <span class="list-item-text" v-on:click="expandItem(profile)">{{
+            profile.name
+          }}</span>
+        </a>
+        <div v-if="profile.expanded">
+          <div
+            v-for="(item, idx) in [
+              ['actions', profile.actions],
+              ['modellers', profile.modellers],
+              ['objects', profile.objects],
+            ]"
+            v-bind:key="idx"
+          >
+            <a class="profile-content-row list-item">
+              <span
+                class="icon"
+                :style="`background-image: url(${
+                  item[1].expanded ? ArrowDownSvg : ArrowRightSvg
+                })`"
+              ></span>
+              <span class="list-item-text" v-on:click="expandItem(item[1])">{{
+                item[0]
+              }}</span>
+            </a>
+            <div v-if="item[1].expanded">
+              <div
+                v-for="(child, childIdx) in item[1].content"
+                v-bind:key="childIdx"
+              >
+                <a class="profile-content-child-row list-item">
+                  <span
+                    class="icon"
+                    :style="`background-image: url(${CubeSvg})`"
+                  ></span>
+                  <span
+                    class="list-item-text"
+                    v-on:click="editFile(child.id)"
+                    >{{ child.name }}</span
+                  >
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       <NewProfileInput
         v-if="showNewProfileInput"
         :inputError="newProfileInputError"
         :onEnter="createProfile"
-        :onCancel="() => showNewProfileInput = false"
+        :onCancel="() => (showNewProfileInput = false)"
       />
     </div>
   </div>
@@ -93,7 +198,7 @@ a {
 }
 
 .profiles {
-  margin: 10px;
+  margin-top: 10px;
   font-size: 12px;
   line-height: 20px;
 }
@@ -104,17 +209,32 @@ a {
   height: 15px;
 }
 
-.profile-name {
+.profile-content-row {
+  padding-left: 10px;
+}
+
+.profile-content-child-row {
+  padding-left: 25px;
+}
+
+.list-item-text {
+  flex: 1;
+  line-height: 25px;
   vertical-align: middle;
 }
 
-.profile-name:hover {
-  text-decoration: underline;
-  cursor: pointer;
+.list-item {
+  display: flex;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
-.profile-name.selected {
-  text-decoration: underline;
-  font-weight: bold;
+.list-item:hover {
+  background: #2A2C3F;
+  cursor: pointer;
 }
 </style>
