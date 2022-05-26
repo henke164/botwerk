@@ -3,6 +3,8 @@ import PlusSvg from "../../assets/img/plus.svg";
 import MinusSvg from "../../assets/img/minus.svg";
 import CubeSvg from "./icons/cube.svg";
 import NewItemInput from "../../components/NewItemInput.vue";
+
+import { get, post, del } from "../../services/apiService.js";
 </script>
 
 <script>
@@ -10,9 +12,14 @@ export default {
   data() {
     return {
       selectedIndex: null,
-      modellers: ["Some"],
+      modellers: [],
       showNewModellerInput: false,
     };
+  },
+  mounted() {
+    get('/modeller').then(res => {
+      this.modellers = res;
+    });
   },
   methods: {
     editNewModeller() {
@@ -20,14 +27,30 @@ export default {
       this.showNewModellerInput = true;
     },
     createModeller(name) {
-      if (this.modellers.includes(name)) {
-        this.inputError = "Name already exists";
+      post('/modeller', {
+        name
+      }).then(res => {
+        if (!res.success) {
+          this.inputError = "Name already exists";
+          return;
+        }
+        this.showNewModellerInput = false;
+        this.modellers.push(res.modeller);
+        this.selectedIndex = this.modellers.length - 1;
+      })
+    },
+    removeSelectedModeller() {
+      if (this.selectedIndex === null) {
         return;
       }
-
-      this.showNewModellerInput = false;
-      this.modellers.push(name);
-      this.selectedIndex = this.modellers.length - 1;
+      const modeller = this.modellers[this.selectedIndex];
+      del(`/modeller/${modeller.id}`).then(res => {
+        console.log(res);
+        if (res.success) {
+          this.modellers.splice(this.selectedIndex, 1);
+          this.selectedIndex = null;
+        }
+      });
     },
     selectModeller(name) {
       if (this.selectedIndex === this.modellers.indexOf(name)) {
@@ -51,14 +74,14 @@ export default {
         v-on:click="editNewModeller"
       ></a>
       <a
-        title="New modeller"
+        title="Remove selected modeller"
         class="icon"
         :style="`background-image: url(${MinusSvg})`"
-        v-on:click="editNewModeller"
+        v-on:click="removeSelectedModeller"
       ></a>
     </div>
     <div class="modellers">
-      <div v-for="(modeller, index) in modellers" v-bind:key="modeller">
+      <div v-for="(modeller, index) in modellers" v-bind:key="index">
         <a
           class="list-item"
           :class="selectedIndex === index ? 'selected' : ''"
@@ -69,7 +92,7 @@ export default {
             :style="`background-image: url(${CubeSvg})`"
           ></span>
           <span class="list-item-text">{{
-            modeller
+            modeller.name
           }}</span>
         </a>
       </div>
