@@ -2,7 +2,7 @@
 import IconPanel from "./components/IconPanel.vue";
 import SidePanel from "./components/SidePanel.vue";
 import MainPanel from "./components/MainPanel.vue";
-import { extensions } from "./services/extensions";
+import { extensions } from "./extensions/extensions.jsx";
 </script>
 
 <script>
@@ -11,9 +11,23 @@ export default {
     return {
       activeMenuIndex: 0,
       menuItems: extensions,
+      availableViews: [],
     };
   },
+  computed: {
+    getAvailableViews() {
+      console.log('compute', this.availableViews);
+      if (!this.availableViews) {
+        return [];
+      }
+      const views = this.menuItems[this.activeMenuIndex].views;
+      return views.filter((v, index) => this.availableViews.includes(index));
+    },
+  },
   methods: {
+    setAvailableViews(indexes) {
+      this.availableViews = indexes;
+    },
     handleMenuChanged(index) {
       this.activeMenuIndex = index;
     },
@@ -28,8 +42,11 @@ export default {
       :menu-items="menuItems"
       :on-menu-changed="handleMenuChanged"
     ></IconPanel>
-    <SidePanel :component="menuItems[activeMenuIndex].component"></SidePanel>
-    <MainPanel></MainPanel>
+    <SidePanel
+      :component="menuItems[activeMenuIndex].component"
+      :setAvailableViews="setAvailableViews"
+    ></SidePanel>
+    <MainPanel :views="getAvailableViews"></MainPanel>
   </main>
 </template>
 

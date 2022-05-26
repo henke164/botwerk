@@ -4,16 +4,19 @@ import DraggableComponent from "./DraggableComponent.vue";
 
 <script>
 export default {
-  props: ["component"],
+  props: ["component", "setAvailableViews"],
 };
 </script>
 
 <template>
   <div class="side-panel">
-    <component v-bind:is="component"></component>
+    <component
+      v-bind:is="component"
+      :setAvailableViews="setAvailableViews"
+    ></component>
     <DraggableComponent
       :side="'right'"
-      :min="250"
+      :min="150"
       :max="500"
     ></DraggableComponent>
   </div>

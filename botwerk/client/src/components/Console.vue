@@ -83,6 +83,7 @@ export default {
       </div>
       <div class="console-log-tools">
         <a
+          class="icon"
           :style="`background-image: url(${ClearSvg})`"
           v-on:click="clearLog"
         ></a>
@@ -159,22 +160,5 @@ a:hover {
 .console-log-tools {
   float: right;
   margin-right: 10px;
-}
-
-.console-log-tools a {
-  display: inline-block;
-  background-repeat: no-repeat;
-  background-size: 100%;
-  width: 20px;
-  height: 20px;
-  filter: opacity(1) invert(1) saturate(0) hue-rotate(150deg) contrast(3)
-    brightness(0.7);
-  vertical-align: middle;
-}
-
-.console-log-tools a:hover {
-  filter: opacity(1) invert(1) saturate(0) hue-rotate(150deg) contrast(3)
-    brightness(1);
-  cursor: pointer;
 }
 </style>
