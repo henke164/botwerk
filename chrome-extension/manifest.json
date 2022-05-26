@@ -1,0 +1,30 @@
+{
+  "name": "Botwerk injector",
+  "version": "1.0.0",
+  "description": "",
+  "manifest_version": 3,
+  "author": "Mazon",
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "Impersonator"
+  },
+  "permissions": [
+    "webRequest",
+    "webRequestBlocking",
+    "scripting",
+    "tabs",
+    "*://*/*"
+  ],
+  "host_permissions": [
+    "*://*/*"
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
+  "web_accessible_resources": [{
+    "resources": [
+      "ws.js"
+    ],
+    "matches": ["<all_urls>"]
+  }]
+}
