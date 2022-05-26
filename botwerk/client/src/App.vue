@@ -11,27 +11,20 @@ export default {
     return {
       activeMenuIndex: 0,
       menuItems: extensions,
-      availableViews: [],
     };
   },
-  computed: {
-    getAvailableViews() {
-      console.log('compute', this.availableViews);
-      if (!this.availableViews) {
-        return [];
-      }
-      const views = this.menuItems[this.activeMenuIndex].views;
-      return views.filter((v, index) => this.availableViews.includes(index));
-    },
-  },
   methods: {
-    setAvailableViews(indexes) {
-      this.availableViews = indexes;
-    },
     handleMenuChanged(index) {
       this.activeMenuIndex = index;
+      localStorage.setItem('activeMenuIndex', index);
     },
   },
+  mounted() {
+    const storedMenuIndex = localStorage.getItem('activeMenuIndex');
+    if (storedMenuIndex) {
+      this.activeMenuIndex = parseInt(storedMenuIndex);
+    }
+  }
 };
 </script>
 
@@ -44,7 +37,6 @@ export default {
     ></IconPanel>
     <SidePanel
       :component="menuItems[activeMenuIndex].component"
-      :setAvailableViews="setAvailableViews"
     ></SidePanel>
     <MainPanel :views="getAvailableViews"></MainPanel>
   </main>

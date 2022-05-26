@@ -6,12 +6,11 @@ import BlueprintSvg from "./icons/blueprint.svg";
 import CogwheelSvg from "./icons/cogwheel.svg";
 import CubeSvg from "./icons/cube.svg";
 
-import NewProfileInput from "./components/NewProfileInput.vue";
+import NewItemInput from "../../components/NewItemInput.vue";
 </script>
 
 <script>
 export default {
-  props: ["setAvailableViews"],
   data() {
     return {
       profiles: [
@@ -96,9 +95,6 @@ export default {
       item.expanded = !item.expanded;
     },
   },
-  mounted() {
-    this.setAvailableViews([]);
-  },
 };
 </script>
 
@@ -167,8 +163,10 @@ export default {
           </div>
         </div>
       </div>
-      <NewProfileInput
+      <NewItemInput
         v-if="showNewProfileInput"
+        :maxLength=20
+        :icon="NewProfileSvg"
         :inputError="newProfileInputError"
         :onEnter="createProfile"
         :onCancel="() => (showNewProfileInput = false)"

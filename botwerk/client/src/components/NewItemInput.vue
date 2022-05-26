@@ -1,23 +1,28 @@
 <script setup>
 import { nextTick } from "vue";
-import ProfileSvg from "../icons/profile.svg";
 </script>
 
 <script>
 export default {
-  props: ["onCancel", "onEnter", "inputError"],
+  props: [
+    "icon",
+    "maxLength",
+    "onCancel",
+    "onEnter",
+    "inputError"
+  ],
   data() {
     return {
-      newProfileName: "",
+      name: "",
     };
   },
   methods: {
-    handleNewProfileKeyDown(e) {
+    handleKeyDown(e) {
       if (e.key.toLowerCase() !== 'enter') {
         return;
       }
 
-      const { value } = this.$refs.newProfileInput;
+      const { value } = this.$refs.input;
       if (value.length === 0) {
         this.onCancel();
         return;
@@ -25,16 +30,16 @@ export default {
 
       this.onEnter(value);
     },
-    handleNewProfileKeyUp(e) {
-      if (e.srcElement.value.length > 20) {
-        e.srcElement.value = e.srcElement.value.substr(0, 5);
+    handleKeyUp(e) {
+      if (e.srcElement.value.length > this.maxLength) {
+        e.srcElement.value = e.srcElement.value.substr(0, this.maxLength);
         return;
       }
     },
   },
   mounted() {
     nextTick(() => {
-      this.$refs.newProfileInput.focus();
+      this.$refs.input.focus();
     });  
   }
 };
@@ -44,13 +49,13 @@ export default {
   <div>
     <span
       class="icon"
-      :style="`background-image: url(${ProfileSvg})`"
+      :style="`background-image: url(${icon})`"
     ></span>
     <input
-      ref="newProfileInput"
+      ref="input"
       v-on:blur="onCancel"
-      v-on:keydown="handleNewProfileKeyDown"
-      v-on:keyup="handleNewProfileKeyUp"
+      v-on:keydown="handleKeyDown"
+      v-on:keyup="handleKeyUp"
       :class="inputError !== null ? 'has-error' : ''"
       type="text"
     />
