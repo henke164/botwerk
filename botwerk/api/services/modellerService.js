@@ -29,9 +29,7 @@ function getModellerList() {
 }
 
 function removeModeller(id) {
-  console.log("Remoing", id);
   const index = modellers.map(m => m.id).indexOf(id);
-  console.log("Idx", index);
   if (index < 0) {
     return {
       success: false,
@@ -79,7 +77,7 @@ function createModeller(name) {
     };
   }
 
-  const id = Math.floor(Math.random() * 10000);
+  const id = Math.floor(Math.random() * 10000).toString();
   const modeller = {
     id,
     name,

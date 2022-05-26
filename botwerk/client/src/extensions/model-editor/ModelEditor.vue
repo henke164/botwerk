@@ -3,8 +3,8 @@ import PlusSvg from "../../assets/img/plus.svg";
 import MinusSvg from "../../assets/img/minus.svg";
 import CubeSvg from "./icons/cube.svg";
 import NewItemInput from "../../components/NewItemInput.vue";
-
 import { get, post, del } from "../../services/apiService.js";
+import { emitAppEvent } from '../../services/appEventHandler';
 </script>
 
 <script>
@@ -17,7 +17,7 @@ export default {
     };
   },
   mounted() {
-    get('/modeller').then(res => {
+    get("/modeller").then((res) => {
       this.modellers = res;
     });
   },
@@ -27,9 +27,9 @@ export default {
       this.showNewModellerInput = true;
     },
     createModeller(name) {
-      post('/modeller', {
-        name
-      }).then(res => {
+      post("/modeller", {
+        name,
+      }).then((res) => {
         if (!res.success) {
           this.inputError = "Name already exists";
           return;
@@ -37,14 +37,14 @@ export default {
         this.showNewModellerInput = false;
         this.modellers.push(res.modeller);
         this.selectedIndex = this.modellers.length - 1;
-      })
+      });
     },
     removeSelectedModeller() {
       if (this.selectedIndex === null) {
         return;
       }
       const modeller = this.modellers[this.selectedIndex];
-      del(`/modeller/${modeller.id}`).then(res => {
+      del(`/modeller/${modeller.id}`).then((res) => {
         console.log(res);
         if (res.success) {
           this.modellers.splice(this.selectedIndex, 1);
@@ -52,13 +52,22 @@ export default {
         }
       });
     },
-    selectModeller(name) {
-      if (this.selectedIndex === this.modellers.indexOf(name)) {
+    toggleSelectModeller(modeller) {
+      if (this.selectedIndex === this.modellers.indexOf(modeller)) {
         this.selectedIndex = null;
+        emitAppEvent("SET_MAIN_PANEL_VIEW", {
+          extensionView: null,
+        });
       } else {
-        this.selectedIndex = this.modellers.indexOf(name);
+        this.selectedIndex = this.modellers.indexOf(modeller);
+        emitAppEvent("SET_MAIN_PANEL_VIEW", {
+          extensionView: "ModelLogicCreate",
+          params: {
+            modellerId: modeller.id,
+          },
+        });
       }
-    }
+    },
   },
 };
 </script>
@@ -85,20 +94,18 @@ export default {
         <a
           class="list-item"
           :class="selectedIndex === index ? 'selected' : ''"
-          v-on:click="selectModeller(modeller)"
+          v-on:click="toggleSelectModeller(modeller)"
         >
           <span
             class="icon"
             :style="`background-image: url(${CubeSvg})`"
           ></span>
-          <span class="list-item-text">{{
-            modeller.name
-          }}</span>
+          <span class="list-item-text">{{ modeller.name }}</span>
         </a>
       </div>
       <NewItemInput
         v-if="showNewModellerInput"
-        :maxLength=20
+        :maxLength="20"
         :icon="CubeSvg"
         :inputError="inputError"
         :onEnter="createModeller"
@@ -163,7 +170,7 @@ a {
 }
 
 .list-item:hover {
-  background: #2A2C3F;
+  background: #2a2c3f;
   cursor: pointer;
 }
 

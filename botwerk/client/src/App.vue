@@ -9,36 +9,36 @@ import { extensions } from "./extensions/extensions.jsx";
 export default {
   data() {
     return {
-      activeMenuIndex: 0,
-      menuItems: extensions,
+      selectedExtensionIndex: 0,
+      extensions,
     };
   },
   methods: {
     handleMenuChanged(index) {
-      this.activeMenuIndex = index;
-      localStorage.setItem('activeMenuIndex', index);
+      this.selectedExtensionIndex = index;
+      localStorage.setItem("selectedExtensionIndex", index);
     },
   },
   mounted() {
-    const storedMenuIndex = localStorage.getItem('activeMenuIndex');
+    const storedMenuIndex = localStorage.getItem("selectedExtensionIndex");
     if (storedMenuIndex) {
-      this.activeMenuIndex = parseInt(storedMenuIndex);
+      this.selectedExtensionIndex = parseInt(storedMenuIndex);
     }
-  }
+  },
 };
 </script>
 
 <template>
   <main>
     <IconPanel
-      :active-menu-index="activeMenuIndex"
-      :menu-items="menuItems"
+      :active-menu-index="selectedExtensionIndex"
+      :menu-items="extensions"
       :on-menu-changed="handleMenuChanged"
     ></IconPanel>
     <SidePanel
-      :component="menuItems[activeMenuIndex].component"
+      :component="extensions[selectedExtensionIndex].component"
     ></SidePanel>
-    <MainPanel :views="getAvailableViews"></MainPanel>
+    <MainPanel :views="extensions[selectedExtensionIndex].views"></MainPanel>
   </main>
 </template>
 

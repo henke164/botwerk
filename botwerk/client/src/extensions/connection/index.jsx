@@ -3,6 +3,5 @@ import Connection from "./Connection.vue";
 
 export default {
   icon,
-  component: Connection,
-  views: []
+  component: Connection
 };

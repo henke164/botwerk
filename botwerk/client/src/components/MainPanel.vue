@@ -1,4 +1,5 @@
 <script setup>
+import { addAppEventListener } from '../services/appEventHandler';
 import Console from "./Console.vue";
 </script>
 <script>
@@ -6,32 +7,31 @@ export default {
   props: ["views"],
   data() {
     return {
-      selectedTab: 0,
+      selectedView: null,
+      viewParams: {},
     };
-  }
-}
+  },
+  mounted() {
+    addAppEventListener("SET_MAIN_PANEL_VIEW", (ev) => {
+      this.selectedView = ev.extensionView;
+      this.viewParams = ev.params;
+    });
+  },
+};
 </script>
 <template>
   <div class="main-panel">
-    <div class="main-content" v-if="views && views.length > 0">
-      <div class="tab-wrapper">
-        <a
-          v-for="(t, index) in views.map(v => v.title)"
-          v-bind:key="index"
-          v-on:click="() => selectedTab = index"
-          class="tab"
-        >{{t}}</a>
-      </div>
+    <div class="main-content" v-if="views && Object.keys(views).length > 0">
       <div
-        v-for="(c, index) in views.map(v => v.component)"
+        v-for="(viewKey, index) in Object.keys(views)"
         v-bind:key="index"
-        :class="selectedTab === index ? 'view-component-wrapper' : ''"
+        :class="selectedView === viewKey ? 'view-component-wrapper' : ''"
       >
         <component
-          v-if="selectedTab === index"
-          v-bind:is="c"
-        >
-        </component>
+          v-if="selectedView === viewKey"
+          v-bind:is="views[viewKey].component"
+          :params="this.viewParams"
+        ></component>
       </div>
     </div>
     <div class="main-content" v-else></div>
@@ -60,22 +60,6 @@ export default {
 .view-component-wrapper {
   display: flex;
   flex: 1;
-}
-
-.tab-wrapper {
-  background: #222336;
-  height: 30px;
-}
-
-.tab {
-  font-size: 12px;
-  display: inline-block;
-  border-left: 1px solid #3f4455;
-  border-right: 1px solid #3f4455;
-  min-width: 100px;
-  line-height: 30px;
-  vertical-align: bottom;
-  text-align: center;
 }
 
 a:hover {
