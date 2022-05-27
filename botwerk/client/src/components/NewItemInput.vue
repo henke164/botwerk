@@ -4,13 +4,7 @@ import { nextTick } from "vue";
 
 <script>
 export default {
-  props: [
-    "icon",
-    "maxLength",
-    "onCancel",
-    "onEnter",
-    "inputError"
-  ],
+  props: ["icon", "maxLength", "onCancel", "onEnter", "inputError"],
   data() {
     return {
       name: "",
@@ -18,7 +12,7 @@ export default {
   },
   methods: {
     handleKeyDown(e) {
-      if (e.key.toLowerCase() !== 'enter') {
+      if (e.key.toLowerCase() !== "enter") {
         return;
       }
 
@@ -40,17 +34,14 @@ export default {
   mounted() {
     nextTick(() => {
       this.$refs.input.focus();
-    });  
-  }
+    });
+  },
 };
 </script>
 
 <template>
   <div>
-    <span
-      class="icon"
-      v-html="icon"
-    ></span>
+    <span class="icon" v-html="icon"></span>
     <input
       ref="input"
       v-on:blur="onCancel"
@@ -59,7 +50,7 @@ export default {
       :class="inputError !== null ? 'has-error' : ''"
       type="text"
     />
-    <span class="input-error">{{inputError}}</span>
+    <span class="input-error">{{ inputError }}</span>
   </div>
 </template>
 

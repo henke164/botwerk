@@ -1,20 +1,29 @@
 <script>
 export default {
-  props: ["tabs"],
+  props: ["tabs", "onTabSelected"],
   data() {
     return {
       selectedTab: 0,
     };
   },
-};
+  methods: {
+    selectTab(index) {
+      this.selectedTab = index;
+      if (this.onTabSelected) {
+        this.onTabSelected(index);
+      }
+    },
+  },
+}
 </script>
 <template>
   <div class="tab-wrapper">
     <a
-      v-for="(t, index) in tabs.map(v => v.title)"
+      v-for="(t, index) in tabs.map((v) => v.title)"
       v-bind:key="index"
-      v-on:click="() => (selectedTab = index)"
+      v-on:click="() => selectTab(index)"
       class="tab"
+      :class="selectedTab === index ? 'active' : ''"
       >{{ t }}</a
     >
   </div>
@@ -22,7 +31,7 @@ export default {
 
 <style scoped>
 .tab-wrapper {
-  background: #222336;
+  background: #2a2c3f;
   height: 30px;
 }
 
@@ -35,6 +44,12 @@ export default {
   line-height: 30px;
   vertical-align: bottom;
   text-align: center;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.tab.active {
+  background: #222336;
 }
 
 a:hover {

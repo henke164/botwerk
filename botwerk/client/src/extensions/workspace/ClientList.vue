@@ -1,19 +1,18 @@
 <script setup>
 import NewClientSvg from "./icons/new-client.svg";
+import CrossSvg from "./icons/cross.svg";
 import ArrowRightSvg from "./icons/arrow-right.svg";
 import ArrowDownSvg from "./icons/arrow-down.svg";
-import BlueprintSvg from "./icons/blueprint.svg";
-import CogwheelSvg from "./icons/cogwheel.svg";
 import CubeSvg from "./icons/cube.svg";
 
 import NewItemInput from "../../components/NewItemInput.vue";
-import { post, get } from '../../services/apiService';
-import { emitAppEvent } from '../../services/appEventHandler';
+import { post, del } from "../../services/apiService";
+import { emitAppEvent } from "../../services/appEventHandler";
 </script>
 
 <script>
 export default {
-  props: ["clients"],
+  props: ["clients", "reload"],
   data() {
     return {
       showNewClientInput: false,
@@ -26,20 +25,22 @@ export default {
       this.newClientInputError = null;
       this.showNewClientInput = true;
     },
-    createClient(name) {
-      if (this.clients.includes(name)) {
-        this.newClientInputError = "Name already exists";
+    async createClient(name) {
+      const { success } = await post("/workspace/client", { name });
+      if (!success) {
+        emitAppEvent("LOG", "Failed to create client");
         return;
       }
-
-      post('/workspace/client', { name }).then(({ success, client }) => {
-        if (!success) {
-          emitAppEvent("LOG", "Failed to create client");
-          return;
-        }
-        this.showNewClientInput = false;
-        this.clients.push(client);
-      });
+      this.showNewClientInput = false;
+      this.reload();
+    },
+    async removeClient(id) {
+      const { success } = await del(`/workspace/client/${id}`)
+      if (!success) {
+        emitAppEvent("LOG", "Failed to remove client client");
+        return;
+      }
+      this.reload();
     },
     expandKey(id) {
       if (this.expanded[id]) {
@@ -74,6 +75,9 @@ export default {
         <span class="list-item-text" v-on:click="expandKey(client.id)">{{
           client.name
         }}</span>
+        <a class="remove" v-on:click="removeClient(client.id)"
+          ><span v-html="CrossSvg"></span
+        ></a>
       </a>
       <div v-if="this.expanded[client.id]">
         <div
@@ -87,30 +91,28 @@ export default {
           <a class="client-content-row list-item">
             <span
               class="icon"
-              v-html="this.expanded[`${client.id}_${item[0]}`] ? ArrowDownSvg : ArrowRightSvg"
+              v-html="
+                this.expanded[`${client.id}_${item[0]}`]
+                  ? ArrowDownSvg
+                  : ArrowRightSvg
+              "
             ></span>
-            <span class="list-item-text" v-on:click="expandKey(`${client.id}_${item[0]}`)">{{
-              `${item[0]}`
-            }}</span>
+            <span
+              class="list-item-text"
+              v-on:click="expandKey(`${client.id}_${item[0]}`)"
+              >{{ `${item[0]}` }}</span
+            >
             <span class="list-item-count">
-              {{`( ${(item[1] ? item[1].length : 0)} )`}}
+              {{ `( ${item[1] ? item[1].length : 0} )` }}
             </span>
           </a>
           <div v-if="this.expanded[`${client.id}_${item[0]}`]">
-            <div
-              v-for="(child, childIdx) in item[1]"
-              v-bind:key="childIdx"
-            >
+            <div v-for="(child, childIdx) in item[1]" v-bind:key="childIdx">
               <a class="client-content-child-row list-item">
-                <span
-                  class="icon"
-                  v-html="CubeSvg"
-                ></span>
-                <span
-                  class="list-item-text"
-                  v-on:click="editFile(child.id)"
-                  >{{ child.name }}</span
-                >
+                <span class="icon" v-html="CubeSvg"></span>
+                <span class="list-item-text" v-on:click="editFile(child.id)">{{
+                  child.name
+                }}</span>
               </a>
             </div>
           </div>
@@ -119,7 +121,7 @@ export default {
     </div>
     <NewItemInput
       v-if="showNewClientInput"
-      :maxLength=20
+      :maxLength="20"
       :icon="NewClientSvg"
       :inputError="newClientInputError"
       :onEnter="createClient"
@@ -129,10 +131,24 @@ export default {
 </template>
 
 <style scoped>
-.panel {
-  display: block;
-  background: #222336;
-  position: relative;
+.remove {
+  width: 25px;
+  height: 25px;
+  text-align: center;
+}
+
+.remove:hover {
+  cursor: pointer;
+}
+
+.remove span {
+  display: inline-block;
+  vertical-align: middle;
+  width: 15px;
+  height: 10px;
+  line-height: 25px;
+  margin-top: -4px;
+  margin-right: -2px;
 }
 
 input[type="text"] {
@@ -169,6 +185,7 @@ a {
 }
 
 .header {
+  font-weight: bolder;
   display: flex;
 }
 
@@ -179,12 +196,12 @@ a {
 
 .list-item-text {
   flex: 1;
-  font-weight: bolder;
   line-height: 25px;
   vertical-align: middle;
 }
 
 .list-item {
+  transition: background 0.1s ease;
   display: flex;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -195,7 +212,7 @@ a {
 }
 
 .list-item:hover {
-  background: #2A2C3F;
+  background: #2a2c3f;
   cursor: pointer;
 }
 </style>

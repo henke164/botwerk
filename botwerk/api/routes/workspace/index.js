@@ -3,9 +3,11 @@ const router = express.Router();
 
 const {
   getWorkspace,
-  saveWorkspace,
   getModelerList,
   updateClient,
+  removeModeler,
+  updateModeler,
+  removeClient,
 } = require('../../services/workspaceService');
 
 router.get("/", (req, res) => {
@@ -26,6 +28,13 @@ router.post("/client", (req, res) => {
   res.send({
     success: true,
     client
+  });
+});
+
+router.delete("/client/:id", (req, res) => {
+  const client = removeClient(req.params.id);
+  res.send({
+    success: true
   });
 });
 

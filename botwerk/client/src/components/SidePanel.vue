@@ -26,6 +26,7 @@ export default {
   background: #222336;
   position: relative;
   padding: 0px 15px;
+  min-width: 150px;
 }
 
 .drag-resize:hover {

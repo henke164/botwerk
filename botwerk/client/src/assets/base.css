@@ -19,6 +19,7 @@ input[type="text"]:focus {
 }
 
 button {
+  background-color: background 0.5s ease;
   margin-top: 10px;
   color: #fff;
   background-color: #007aa6;

@@ -1,6 +1,6 @@
 <script setup>
-import ClientEditor from "./ClientEditor.vue";
-import ModelerEditor from "./ModelerEditor.vue";
+import ClientList from "./ClientList.vue";
+import ModelerList from "./ModelerList.vue";
 import { get } from "../../services/apiService";
 import { emitAppEvent } from "../../services/appEventHandler";
 </script>
@@ -15,14 +15,18 @@ export default {
       expanded: {},
     };
   },
-  mounted() {
-    get("/workspace").then(({ success, workspace }) => {
+  methods: {
+    async reload() {
+      const { success, workspace } = await get("/workspace");
       if (success) {
         this.workspace = workspace;
       } else {
         emitAppEvent("LOG", "Failed to load workspace");
       }
-    });
+    },
+  },
+  mounted() {
+    this.reload();
   },
 };
 </script>
@@ -30,8 +34,8 @@ export default {
 <template>
   <div class="panel">
     <h4>WORKSPACE</h4>
-    <ClientEditor :clients="this.workspace.clients" />
-    <ModelerEditor />
+    <ClientList :reload="reload" :clients="this.workspace.clients" />
+    <ModelerList :reload="reload" :modelers="this.workspace.modelers" />
   </div>
 </template>
 

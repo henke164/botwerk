@@ -28,7 +28,7 @@ export default {
       const parent = this.$refs.dragResize.parentElement;
       if (this.side === "right") {
         const halfBarWidth = this.$refs.dragResize.clientWidth / 2;
-        const width = ev.clientX - parent.offsetLeft + halfBarWidth - 60;
+        const width = ev.clientX - parent.offsetLeft + halfBarWidth - 30;
         if (width < this.min || width > this.max) {
           return;
         }
@@ -62,6 +62,7 @@ export default {
   z-index: 1;
   position: absolute;
   background: #3f4455;
+  box-shadow: 1px 1px 1px #3f4455;
 }
 
 .drag-resize:hover {

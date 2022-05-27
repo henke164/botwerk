@@ -1,70 +1,70 @@
 <script setup>
-import PlusSvg from "../../assets/img/plus.svg";
-import MinusSvg from "../../assets/img/minus.svg";
+import NewClientSvg from "./icons/new-client.svg";
+import CrossSvg from "./icons/cross.svg";
 import CubeSvg from "./icons/cube.svg";
 import NewItemInput from "../../components/NewItemInput.vue";
-import { get, post, del } from "../../services/apiService.js";
+import { post, del } from "../../services/apiService.js";
 import { emitAppEvent } from "../../services/appEventHandler";
 </script>
 
 <script>
 export default {
+  props: ["modelers", "reload"],
   data() {
     return {
       selectedIndex: null,
-      modelers: [],
       showNewModelerInput: false,
     };
   },
-  mounted() {
-    get("/workspace/modeler").then((res) => {
-      this.modelers = res;
-    });
-  },
   methods: {
+    openEditModelerView(modeler) {
+      emitAppEvent("SET_MAIN_PANEL_VIEW", {
+        extensionView: "ModelLogicCreate",
+        params: {
+          modeler,
+          reload: this.reload,
+        },
+      });
+    },
+    closeEditModelerView() {
+      emitAppEvent("SET_MAIN_PANEL_VIEW", {
+        extensionView: null,
+      });
+    },
     editNewModeler() {
       this.inputError = null;
       this.showNewModelerInput = true;
     },
-    createModeler(name) {
-      post("/workspace/modeler", {
+    async createModeler(name) {
+      const res = await post("/workspace/modeler", {
         name,
-      }).then((res) => {
-        if (!res.success) {
-          this.inputError = "Name already exists";
-          return;
-        }
-        this.showNewModelerInput = false;
-        this.modelers.push(res.modeler);
-        this.selectedIndex = this.modelers.length - 1;
       });
-    },
-    removeSelectedModeler() {
-      if (this.selectedIndex === null) {
+
+      if (!res.success) {
+        this.inputError = "Failed to create modeler";
         return;
       }
-      const modeler = this.modelers[this.selectedIndex];
-      del(`/workspace/modeler/${modeler.id}`).then((res) => {
-        if (res.success) {
-          this.modelers.splice(this.selectedIndex, 1);
-          this.selectedIndex = null;
-        }
-      });
+      this.showNewModelerInput = false;
+      await this.reload();
+      this.selectedIndex = this.modelers.length - 1;
+      this.openEditModelerView(res.modeler);
+    },
+    async removeModeler(id) {
+      const res = await del(`/workspace/modeler/${id}`);
+      if (!res.success) {
+        return;
+      }
+      this.reload();
+      this.selectedIndex = null;
+      this.closeEditModelerView();
     },
     toggleSelectModeler(modeler) {
       if (this.selectedIndex === this.modelers.indexOf(modeler)) {
         this.selectedIndex = null;
-        emitAppEvent("SET_MAIN_PANEL_VIEW", {
-          extensionView: null,
-        });
+        this.closeEditModelerView();
       } else {
         this.selectedIndex = this.modelers.indexOf(modeler);
-        emitAppEvent("SET_MAIN_PANEL_VIEW", {
-          extensionView: "ModelLogicCreate",
-          params: {
-            modelerId: modeler.id,
-          },
-        });
+        this.openEditModelerView(modeler);
       }
     },
   },
@@ -79,14 +79,8 @@ export default {
         <a
           title="New modeler"
           class="icon"
-          v-html="PlusSvg"
+          v-html="NewClientSvg"
           v-on:click="editNewModeler"
-        ></a>
-        <a
-          title="Remove selected modeler"
-          class="icon"
-          v-html="MinusSvg"
-          v-on:click="removeSelectedModeler"
         ></a>
       </div>
     </div>
@@ -98,6 +92,16 @@ export default {
       >
         <span class="icon" v-html="CubeSvg"></span>
         <span class="list-item-text">{{ modeler.name }}</span>
+        <a
+          class="remove"
+          v-on:click="
+            (e) => {
+              e.preventDefault();
+              removeModeler(modeler.id);
+            }
+          "
+          ><span v-html="CrossSvg"></span
+        ></a>
       </a>
     </div>
     <NewItemInput
@@ -112,7 +116,28 @@ export default {
 </template>
 
 <style scoped>
+.remove {
+  width: 25px;
+  height: 25px;
+  text-align: center;
+}
+
+.remove:hover {
+  cursor: pointer;
+}
+
+.remove span {
+  display: inline-block;
+  vertical-align: middle;
+  width: 15px;
+  height: 10px;
+  line-height: 25px;
+  margin-top: -4px;
+  margin-right: -2px;
+}
+
 .header {
+  font-weight: bolder;
   display: flex;
 }
 
@@ -146,11 +171,6 @@ a {
   height: 15px;
 }
 
-.tools .icon {
-  margin: 0;
-  margin-left: 10px;
-}
-
 .list-item-text {
   flex: 1;
   line-height: 25px;
@@ -158,6 +178,7 @@ a {
 }
 
 .list-item {
+  transition: background 0.1s ease;
   display: flex;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -174,7 +195,21 @@ a {
 
 .list-item.selected {
   background: #007aa6;
-  border: 1px solid #81c9e4;
-  margin: -2px;
+  box-shadow: inset 0px 0px 2px 1px #81c9e4;
+  z-index: 2;
+}
+</style>
+
+<style>
+.remove span svg {
+  display: none;
+}
+
+.list-item:hover .remove span svg {
+  display: inherit;
+}
+
+.remove:hover span svg {
+  stroke: #fff;
 }
 </style>

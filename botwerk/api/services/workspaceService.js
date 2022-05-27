@@ -1,16 +1,12 @@
 const { v4: uuidv4 } = require('uuid');
 const fs = require('fs');
-const { defaultWorkspace } = require('../utilities/defaultValues');
+const { defaultWorkspace, defaultModeler } = require('../utilities/defaultValues');
 
 const cachePath = __dirname + "/workspace-cache.json";
 let currentWorkspace;
 loadCachedWorkspace(cachePath);
 
 function getWorkspace() {
-  if (!currentWorkspace) {
-    importWorkspace(cachePath);
-  }
-
   return currentWorkspace;
 }
 
@@ -42,25 +38,45 @@ function updateClient({ id, name, actions, modelers }) {
   }
 
   const index = currentWorkspace.clients.map(m => m.id).indexOf(id);
-  if (index < 0) {
-    const client = {
-      id: uuidv4(),
-      name,
-      actions: actions || [],
-      modelers: modelers || [],
-      objects: [],
-    }
-    currentWorkspace.clients.push(client);
-  } else {
+  if (index !== -1) {
     currentWorkspace.clients[index] = {
       ...currentWorkspace.clients[index],
       name,
       actions,
       modelers,
     };
+    saveWorkspace();
+    return currentWorkspace.clients[index];
   }
 
+  const client = {
+    id: uuidv4(),
+    name,
+    actions: actions || [],
+    modelers: modelers || [],
+    objects: [],
+  }
+  currentWorkspace.clients.push(client);
   saveWorkspace();
+  return client;
+}
+
+function removeClient(id) {
+  const index = currentWorkspace.clients.map(m => m.id).indexOf(id);
+  if (index < 0) {
+    return {
+      success: false,
+      error: "Client not found",
+    };
+  }
+
+  currentWorkspace.clients.splice(index, 1);
+  
+  saveWorkspace();
+
+  return {
+    success: true,
+  };
 }
 
 /* Modelers */
@@ -108,7 +124,7 @@ function updateModeler({ id, name, content }) {
 }
 
 function removeModeler(id) {
-  const index = modelers.map(m => m.id).indexOf(id);
+  const index = currentWorkspace.modelers.map(m => m.id).indexOf(id);
   if (index < 0) {
     return {
       success: false,
@@ -116,7 +132,7 @@ function removeModeler(id) {
     };
   }
 
-  modelers.splice(index, 1);
+  currentWorkspace.modelers.splice(index, 1);
   
   saveWorkspace();
 
@@ -127,9 +143,10 @@ function removeModeler(id) {
 
 module.exports = {
   getModelerList,
-  removeModeler,
   updateClient,
+  removeClient,
   updateModeler,
+  removeModeler,
   getWorkspace,
   saveWorkspace
 }
