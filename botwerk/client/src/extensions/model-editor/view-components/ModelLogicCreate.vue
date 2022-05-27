@@ -3,55 +3,15 @@ import CodeEditor from 'simple-code-editor';
 
 </script>
 <script>
-const defaultText = `/*
-  Define your model type here based on the packet content. 
-*/
-
-function onSocketPacketReceived(socketIndex, packet) {
-  /*
-     Example:
-     if (socketIndex === 0) {
-        const { type, data } = JSON.parse(packet);
-        if (type === "user_data") {
-            return "User"
-        }
-
-        if (type === "user_data") {
-            return "User"
-        }
-        function hej() {
-          
-        }
-     }
-  */
-
-  return null;
-}
-
-function onSocketPacketReceived(socketIndex, packet) {
-  /*
-     Example:
-     if (socketIndex === 0) {
-        const { type, data } = JSON.parse(packet);
-        if (type === "user_data") {
-            return "User"
-        }
-
-        if (type === "user_data") {
-            return "User"
-        }
-     }
-  */
-
-  return null;
-}
-`;
-
 export default {
+  props: ["params"],
   data() {
     return {
-      text: defaultText,
+      text: "",
     };
+  },
+  mounted() {
+    console.log(this.params.modellerId);
   },
   methods: {
     handleSave(code) {
