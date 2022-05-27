@@ -1,10 +1,11 @@
 const express = require("express");
-const { createClient } = require("../../services/clientService");
 const router = express.Router();
 
 const {
   getWorkspace,
   saveWorkspace,
+  getModelerList,
+  updateClient,
 } = require('../../services/workspaceService');
 
 router.get("/", (req, res) => {
@@ -15,26 +16,25 @@ router.get("/", (req, res) => {
   });
 });
 
-router.post("/client", (req, res) => {
-  const workspace = getWorkspace();
-  const client = createClient(req.body.name);
-  workspace.clients.push(client);
-  saveWorkspace();
+router.get("/modeler", (req, res) => {
+  const list = getModelerList();
+  res.send(list);
+});
 
+router.post("/client", (req, res) => {
+  const client = updateClient(req.body);
   res.send({
     success: true,
     client
   });
 });
 
-router.put("/", (req, res) => {
-  saveWorkspace(req.body);
-  res.send({
-    success: true
-  });
+router.post("/modeler", (req, res) => {
+  const modeler = updateModeler(req.body);
+  res.send(modeler);
 });
 
-router.delete("/:id", (req, res) => {
+router.delete("/modeler/:id", (req, res) => {
   const status = removeModeler(req.params.id);
   res.send(status);
 });

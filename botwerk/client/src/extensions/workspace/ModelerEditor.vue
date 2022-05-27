@@ -4,7 +4,7 @@ import MinusSvg from "../../assets/img/minus.svg";
 import CubeSvg from "./icons/cube.svg";
 import NewItemInput from "../../components/NewItemInput.vue";
 import { get, post, del } from "../../services/apiService.js";
-import { emitAppEvent } from '../../services/appEventHandler';
+import { emitAppEvent } from "../../services/appEventHandler";
 </script>
 
 <script>
@@ -17,7 +17,7 @@ export default {
     };
   },
   mounted() {
-    get("/modeler").then((res) => {
+    get("/workspace/modeler").then((res) => {
       this.modelers = res;
     });
   },
@@ -27,7 +27,7 @@ export default {
       this.showNewModelerInput = true;
     },
     createModeler(name) {
-      post("/modeler", {
+      post("/workspace/modeler", {
         name,
       }).then((res) => {
         if (!res.success) {
@@ -44,7 +44,7 @@ export default {
         return;
       }
       const modeler = this.modelers[this.selectedIndex];
-      del(`/modeler/${modeler.id}`).then((res) => {
+      del(`/workspace/modeler/${modeler.id}`).then((res) => {
         if (res.success) {
           this.modelers.splice(this.selectedIndex, 1);
           this.selectedIndex = null;
