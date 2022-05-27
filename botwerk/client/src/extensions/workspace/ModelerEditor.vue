@@ -12,57 +12,57 @@ export default {
   data() {
     return {
       selectedIndex: null,
-      modellers: [],
-      showNewModellerInput: false,
+      modelers: [],
+      showNewModelerInput: false,
     };
   },
   mounted() {
-    get("/modeller").then((res) => {
-      this.modellers = res;
+    get("/modeler").then((res) => {
+      this.modelers = res;
     });
   },
   methods: {
-    editNewModeller() {
+    editNewModeler() {
       this.inputError = null;
-      this.showNewModellerInput = true;
+      this.showNewModelerInput = true;
     },
-    createModeller(name) {
-      post("/modeller", {
+    createModeler(name) {
+      post("/modeler", {
         name,
       }).then((res) => {
         if (!res.success) {
           this.inputError = "Name already exists";
           return;
         }
-        this.showNewModellerInput = false;
-        this.modellers.push(res.modeller);
-        this.selectedIndex = this.modellers.length - 1;
+        this.showNewModelerInput = false;
+        this.modelers.push(res.modeler);
+        this.selectedIndex = this.modelers.length - 1;
       });
     },
-    removeSelectedModeller() {
+    removeSelectedModeler() {
       if (this.selectedIndex === null) {
         return;
       }
-      const modeller = this.modellers[this.selectedIndex];
-      del(`/modeller/${modeller.id}`).then((res) => {
+      const modeler = this.modelers[this.selectedIndex];
+      del(`/modeler/${modeler.id}`).then((res) => {
         if (res.success) {
-          this.modellers.splice(this.selectedIndex, 1);
+          this.modelers.splice(this.selectedIndex, 1);
           this.selectedIndex = null;
         }
       });
     },
-    toggleSelectModeller(modeller) {
-      if (this.selectedIndex === this.modellers.indexOf(modeller)) {
+    toggleSelectModeler(modeler) {
+      if (this.selectedIndex === this.modelers.indexOf(modeler)) {
         this.selectedIndex = null;
         emitAppEvent("SET_MAIN_PANEL_VIEW", {
           extensionView: null,
         });
       } else {
-        this.selectedIndex = this.modellers.indexOf(modeller);
+        this.selectedIndex = this.modelers.indexOf(modeler);
         emitAppEvent("SET_MAIN_PANEL_VIEW", {
           extensionView: "ModelLogicCreate",
           params: {
-            modellerId: modeller.id,
+            modelerId: modeler.id,
           },
         });
       }
@@ -72,41 +72,41 @@ export default {
 </script>
 
 <template>
-  <div class="modellers">
+  <div class="modelers">
     <div class="header">
-      Modellers
+      Modelers
       <div class="tools">
         <a
-          title="New modeller"
+          title="New modeler"
           class="icon"
           v-html="PlusSvg"
-          v-on:click="editNewModeller"
+          v-on:click="editNewModeler"
         ></a>
         <a
-          title="Remove selected modeller"
+          title="Remove selected modeler"
           class="icon"
           v-html="MinusSvg"
-          v-on:click="removeSelectedModeller"
+          v-on:click="removeSelectedModeler"
         ></a>
       </div>
     </div>
-    <div v-for="(modeller, index) in modellers" v-bind:key="index">
+    <div v-for="(modeler, index) in modelers" v-bind:key="index">
       <a
         class="list-item"
         :class="selectedIndex === index ? 'selected' : ''"
-        v-on:click="toggleSelectModeller(modeller)"
+        v-on:click="toggleSelectModeler(modeler)"
       >
         <span class="icon" v-html="CubeSvg"></span>
-        <span class="list-item-text">{{ modeller.name }}</span>
+        <span class="list-item-text">{{ modeler.name }}</span>
       </a>
     </div>
     <NewItemInput
-      v-if="showNewModellerInput"
+      v-if="showNewModelerInput"
       :maxLength="20"
       :icon="CubeSvg"
       :inputError="inputError"
-      :onEnter="createModeller"
-      :onCancel="() => (showNewModellerInput = false)"
+      :onEnter="createModeler"
+      :onCancel="() => (showNewModelerInput = false)"
     />
   </div>
 </template>
@@ -134,13 +134,13 @@ a {
   color: white;
 }
 
-.modellers {
+.modelers {
   margin-top: 10px;
   font-size: 12px;
   line-height: 20px;
 }
 
-.modellers .icon {
+.modelers .icon {
   margin: 5px;
   width: 15px;
   height: 15px;

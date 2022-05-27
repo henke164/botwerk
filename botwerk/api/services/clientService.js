@@ -9,7 +9,7 @@ function createClient(name) {
     id: uuidv4(),
     name,
     actions: [],
-    modellers: [],
+    modelers: [],
     objects: []
   }
 }

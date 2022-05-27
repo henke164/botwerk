@@ -11,7 +11,7 @@ export default {
     };
   },
   mounted() {
-    console.log(this.params.modellerId);
+    console.log(this.params.modelerId);
   },
   methods: {
     handleSave(code) {

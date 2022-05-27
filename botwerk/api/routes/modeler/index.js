@@ -1,27 +1,27 @@
 const express = require("express");
 const router = express.Router();
 
-const { getModellerList, updateModeller, createModeller, removeModeller } = require('../../services/modellerService');
+const { getModelerList, updateModeler, createModeler, removeModeler } = require('../../services/modelerService');
 
 router.get("/", (req, res) => {
-  const list = getModellerList();
+  const list = getModelerList();
   res.send(list);
 });
 
 router.post("/", (req, res) => {
   const { name } = req.body;
-  const modeller = createModeller(name);
-  res.send(modeller);
+  const modeler = createModeler(name);
+  res.send(modeler);
 });
 
 router.put("/", (req, res) => {
   const { id, name, content } = req.body;
-  const updated = updateModeller(id, name, content);
+  const updated = updateModeler(id, name, content);
   res.send(updated);
 });
 
 router.delete("/:id", (req, res) => {
-  const status = removeModeller(req.params.id);
+  const status = removeModeler(req.params.id);
   res.send(status);
 });
 

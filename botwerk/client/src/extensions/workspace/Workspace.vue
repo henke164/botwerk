@@ -1,6 +1,6 @@
 <script setup>
 import ClientEditor from "./ClientEditor.vue";
-import ModellerEditor from "./ModellerEditor.vue";
+import ModelerEditor from "./ModelerEditor.vue";
 import { get } from "../../services/apiService";
 import { emitAppEvent } from "../../services/appEventHandler";
 </script>
@@ -31,7 +31,7 @@ export default {
   <div class="panel">
     <h4>WORKSPACE</h4>
     <ClientEditor :clients="this.workspace.clients" />
-    <ModellerEditor />
+    <ModelerEditor />
   </div>
 </template>
 

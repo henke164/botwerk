@@ -35,7 +35,7 @@ router.put("/", (req, res) => {
 });
 
 router.delete("/:id", (req, res) => {
-  const status = removeModeller(req.params.id);
+  const status = removeModeler(req.params.id);
   res.send(status);
 });
 

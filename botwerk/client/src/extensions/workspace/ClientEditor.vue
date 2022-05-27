@@ -79,7 +79,7 @@ export default {
         <div
           v-for="(item, idx) in [
             ['actions', client.actions],
-            ['modellers', client.modellers],
+            ['modelers', client.modelers],
             ['objects', client.objects],
           ]"
           v-bind:key="idx"
