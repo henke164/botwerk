@@ -1,5 +1,7 @@
+const { v4: uuidv4 } = require('uuid');
+
 const defaultModeller = {
-  id: "1",
+  id: uuidv4(),
   name: "Default Mapper",
   content: `/*
 Define your model type here based on the packet content. 
@@ -25,16 +27,23 @@ return null;
 };
 
 const defaultClient = {
-  id: '123',
+  id: uuidv4(),
   name: 'Default',
   actions: [],
-  modellers: []
+  modellers: [{
+    id: defaultModeller.id,
+    name: defaultModeller.name,
+  }]
 };
 
 const defaultWorkspace = {
+  name: "Default workspace",
   clients: [defaultClient],
   actions: [],
-  modellers: [defaultModeller],
+  modellers: [{
+    id: defaultModeller.id,
+    name: defaultModeller.name,
+  }],
 };
 
 module.exports = {

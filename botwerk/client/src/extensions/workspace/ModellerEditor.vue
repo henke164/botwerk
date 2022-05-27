@@ -45,7 +45,6 @@ export default {
       }
       const modeller = this.modellers[this.selectedIndex];
       del(`/modeller/${modeller.id}`).then((res) => {
-        console.log(res);
         if (res.success) {
           this.modellers.splice(this.selectedIndex, 1);
           this.selectedIndex = null;
@@ -73,53 +72,56 @@ export default {
 </script>
 
 <template>
-  <div class="panel">
-    <h4>MODELLERS</h4>
-    <div class="tools">
-      <a
-        title="New modeller"
-        class="icon"
-        v-html="PlusSvg"
-        v-on:click="editNewModeller"
-      ></a>
-      <a
-        title="Remove selected modeller"
-        class="icon"
-        v-html="MinusSvg"
-        v-on:click="removeSelectedModeller"
-      ></a>
-    </div>
-    <div class="modellers">
-      <div v-for="(modeller, index) in modellers" v-bind:key="index">
+  <div class="modellers">
+    <div class="header">
+      Modellers
+      <div class="tools">
         <a
-          class="list-item"
-          :class="selectedIndex === index ? 'selected' : ''"
-          v-on:click="toggleSelectModeller(modeller)"
-        >
-          <span
-            class="icon"
-            v-html="CubeSvg"
-          ></span>
-          <span class="list-item-text">{{ modeller.name }}</span>
-        </a>
+          title="New client"
+          class="icon"
+          v-html="PlusSvg"
+          v-on:click="editNewModeller"
+        ></a>
+        <a
+          title="Remove selected modeller"
+          class="icon"
+          v-html="MinusSvg"
+          v-on:click="removeSelectedModeller"
+        ></a>
       </div>
-      <NewItemInput
-        v-if="showNewModellerInput"
-        :maxLength="20"
-        :icon="CubeSvg"
-        :inputError="inputError"
-        :onEnter="createModeller"
-        :onCancel="() => (showNewModellerInput = false)"
-      />
     </div>
+    <div v-for="(modeller, index) in modellers" v-bind:key="index">
+      <a
+        class="list-item"
+        :class="selectedIndex === index ? 'selected' : ''"
+        v-on:click="toggleSelectModeller(modeller)"
+      >
+        <span
+          class="icon"
+          v-html="CubeSvg"
+        ></span>
+        <span class="list-item-text">{{ modeller.name }}</span>
+      </a>
+    </div>
+    <NewItemInput
+      v-if="showNewModellerInput"
+      :maxLength="20"
+      :icon="CubeSvg"
+      :inputError="inputError"
+      :onEnter="createModeller"
+      :onCancel="() => (showNewModellerInput = false)"
+    />
   </div>
 </template>
 
 <style scoped>
-.panel {
-  display: block;
-  background: #222336;
-  position: relative;
+.header {
+  display: flex;
+}
+
+.tools {
+  flex: 1;
+  text-align: right;
 }
 
 input[type="text"] {
@@ -148,7 +150,8 @@ a {
 }
 
 .tools .icon {
-  margin: 5px;
+  margin: 0;
+  margin-left: 10px;
   width: 10px;
   height: 10px;
 }

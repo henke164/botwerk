@@ -7,7 +7,9 @@ async function get(path) {
 
   if (res.status !== 200) {
     emitAppEvent("LOG", `Request failed! GET: ${apiUrl}${path}`);
-    return null;
+    return {
+      success: false
+    };
   }
 
   return await res.json();
@@ -24,7 +26,9 @@ async function post(path, body) {
 
   if (res.status !== 200) {
     emitAppEvent("LOG", `Request failed! POST: ${apiUrl}${path}`);
-    return null;
+    return {
+      success: false
+    };
   }
 
   return await res.json();
@@ -37,7 +41,9 @@ async function del(path) {
 
   if (res.status !== 200) {
     emitAppEvent("LOG", `Request failed! DELETE: ${apiUrl}${path}`);
-    return null;
+    return {
+      success: false
+    };
   }
   
   return await res.json();
