@@ -1,4 +1,5 @@
 const { defaultModeller } = require('../utilities/defaultValues');
+const { saveWorkspace } = require('../services/workspaceService');
 
 const modellers = [ defaultModeller ];
 
@@ -16,6 +17,8 @@ function removeModeller(id) {
   }
 
   modellers.splice(index, 1);
+
+  saveWorkspace();
 
   return {
     success: true,
@@ -44,7 +47,12 @@ function updateModeller(id, name, content) {
     content
   };
 
-  return modellers[index];
+  saveWorkspace();
+
+  return {
+    success: true,
+    modeller: modellers[index]
+  }; 
 }
 
 function createModeller(name) {
@@ -64,6 +72,8 @@ function createModeller(name) {
   
   modellers.push(modeller);
   
+  saveWorkspace();
+
   return {
     success: true,
     modeller

@@ -10,9 +10,7 @@ export default {
 
 <template>
   <div class="side-panel">
-    <component
-      v-bind:is="component"
-    ></component>
+    <component v-bind:is="component"></component>
     <DraggableComponent
       :side="'right'"
       :min="150"
@@ -27,7 +25,7 @@ export default {
   height: 100vh;
   background: #222336;
   position: relative;
-  padding: 0px 30px;
+  padding: 0px 15px;
 }
 
 .drag-resize:hover {

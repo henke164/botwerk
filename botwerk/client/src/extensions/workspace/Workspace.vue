@@ -1,9 +1,8 @@
 <script setup>
 import ClientEditor from "./ClientEditor.vue";
 import ModellerEditor from "./ModellerEditor.vue";
-import NewItemInput from "../../components/NewItemInput.vue";
-import { post, get } from '../../services/apiService';
-import { emitAppEvent } from '../../services/appEventHandler';
+import { get } from "../../services/apiService";
+import { emitAppEvent } from "../../services/appEventHandler";
 </script>
 
 <script>
@@ -17,7 +16,7 @@ export default {
     };
   },
   mounted() {
-    get('/workspace').then(({ success, workspace }) => {
+    get("/workspace").then(({ success, workspace }) => {
       if (success) {
         this.workspace = workspace;
       } else {
@@ -103,7 +102,7 @@ a {
 }
 
 .list-item:hover {
-  background: #2A2C3F;
+  background: #2a2c3f;
   cursor: pointer;
 }
 </style>

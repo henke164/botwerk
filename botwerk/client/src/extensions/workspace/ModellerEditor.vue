@@ -77,7 +77,7 @@ export default {
       Modellers
       <div class="tools">
         <a
-          title="New client"
+          title="New modeller"
           class="icon"
           v-html="PlusSvg"
           v-on:click="editNewModeller"
@@ -96,10 +96,7 @@ export default {
         :class="selectedIndex === index ? 'selected' : ''"
         v-on:click="toggleSelectModeller(modeller)"
       >
-        <span
-          class="icon"
-          v-html="CubeSvg"
-        ></span>
+        <span class="icon" v-html="CubeSvg"></span>
         <span class="list-item-text">{{ modeller.name }}</span>
       </a>
     </div>
@@ -152,8 +149,6 @@ a {
 .tools .icon {
   margin: 0;
   margin-left: 10px;
-  width: 10px;
-  height: 10px;
 }
 
 .list-item-text {
