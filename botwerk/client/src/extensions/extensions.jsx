@@ -1,6 +1,6 @@
-import workspace from './workspace'
-import modelEditor from './model-editor'
-import connection from './connection'
+import workspace from './workspace/index.jsx';
+import modelEditor from './model-editor/index.jsx';
+import connection from './connection/index.jsx';
 
 const extensions = [
   workspace,

@@ -84,8 +84,8 @@ export default {
       <div class="console-log-tools">
         <a
           class="icon"
-          :style="`background-image: url(${ClearSvg})`"
           v-on:click="clearLog"
+          v-html="ClearSvg"
         ></a>
       </div>
     </div>

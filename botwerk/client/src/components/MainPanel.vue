@@ -60,6 +60,7 @@ export default {
 .view-component-wrapper {
   display: flex;
   flex: 1;
+  max-height: 100%;
 }
 
 a:hover {

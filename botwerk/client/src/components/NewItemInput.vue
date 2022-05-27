@@ -49,7 +49,7 @@ export default {
   <div>
     <span
       class="icon"
-      :style="`background-image: url(${icon})`"
+      v-html="icon"
     ></span>
     <input
       ref="input"

@@ -105,7 +105,7 @@ export default {
       <a
         title="New profile"
         class="icon"
-        :style="`background-image: url(${NewProfileSvg})`"
+        v-html="NewProfileSvg"
         v-on:click="editNewProfile()"
       ></a>
     </div>
@@ -114,9 +114,7 @@ export default {
         <a class="list-item">
           <span
             class="icon"
-            :style="`background-image: url(${
-              profile.expanded ? ArrowDownSvg : ArrowRightSvg
-            })`"
+            v-html="profile.expanded ? ArrowDownSvg : ArrowRightSvg"
           ></span>
           <span class="list-item-text" v-on:click="expandItem(profile)">{{
             profile.name
@@ -134,9 +132,7 @@ export default {
             <a class="profile-content-row list-item">
               <span
                 class="icon"
-                :style="`background-image: url(${
-                  item[1].expanded ? ArrowDownSvg : ArrowRightSvg
-                })`"
+                v-html="item[1].expanded ? ArrowDownSvg : ArrowRightSvg"
               ></span>
               <span class="list-item-text" v-on:click="expandItem(item[1])">{{
                 item[0]
@@ -150,7 +146,7 @@ export default {
                 <a class="profile-content-child-row list-item">
                   <span
                     class="icon"
-                    :style="`background-image: url(${CubeSvg})`"
+                    v-html="CubeSvg"
                   ></span>
                   <span
                     class="list-item-text"

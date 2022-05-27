@@ -79,13 +79,13 @@ export default {
       <a
         title="New modeller"
         class="icon"
-        :style="`background-image: url(${PlusSvg})`"
+        v-html="PlusSvg"
         v-on:click="editNewModeller"
       ></a>
       <a
         title="Remove selected modeller"
         class="icon"
-        :style="`background-image: url(${MinusSvg})`"
+        v-html="MinusSvg"
         v-on:click="removeSelectedModeller"
       ></a>
     </div>
@@ -98,7 +98,7 @@ export default {
         >
           <span
             class="icon"
-            :style="`background-image: url(${CubeSvg})`"
+            v-html="CubeSvg"
           ></span>
           <span class="list-item-text">{{ modeller.name }}</span>
         </a>

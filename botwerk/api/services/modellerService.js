@@ -1,28 +1,6 @@
-const defaultContent = `/*
-Define your model type here based on the packet content. 
-*/
+const { defaultModeller } = require('../utilities/defaultValues');
 
-function onSocketPacketReceived(socketIndex, packet) {
-/*
-   Example:
-   if (socketIndex === 0) {
-      const { type, data } = JSON.parse(packet);
-      if (type === "user_data") {
-          return "User"
-      }
-
-      if (type === "user_data") {
-          return "User"
-      }
-   }
-*/
-
-return null;
-}`;
-
-const modellers = [];
-
-createModeller("Default");
+const modellers = [ defaultModeller ];
 
 function getModellerList() {
   return modellers.map(m => ({ id: m.id, name: m.name }));
@@ -81,7 +59,7 @@ function createModeller(name) {
   const modeller = {
     id,
     name,
-    content: defaultContent
+    content: defaultModeller.content,
   };
   
   modellers.push(modeller);
