@@ -80,26 +80,35 @@ function removeClient(id) {
 }
 
 /* Modelers */
-function getModelerList() {
+function getModeler(id) {
+  const modeler = currentWorkspace.modelers.find(m => m.id === id);
+  if (!modeler) {
+    return {
+      success: false,
+    };
+  }
+
+  return {
+    success: true,
+    modeler
+  };
+}
+
+function getAllModelers() {
   return currentWorkspace.modelers.map(m => ({ id: m.id, name: m.name }));
 }
 
-function updateModeler({ id, name, content }) {
-  if (currentWorkspace.modelers.filter(m => m.id !== id).map(m => m.name).includes(name)) {
+function updateModeler(modeler) {
+  if (currentWorkspace.modelers.filter(m => m.id !== modeler.id).map(m => m.name).includes(modeler.name)) {
     return {
       success: false,
       error: "Name already exists",
     };
   }
   
-  const index = currentWorkspace.modelers.map(m => m.id).indexOf(id);
+  const index = currentWorkspace.modelers.map(m => m.id).indexOf(modeler.id);
   if (index !== -1) {
-    currentWorkspace.modelers[index] = {
-      ...currentWorkspace.modelers[index],
-      name,
-      content
-    };
-
+    currentWorkspace.modelers[index] = modeler;
     saveWorkspace();
 
     return {
@@ -107,19 +116,18 @@ function updateModeler({ id, name, content }) {
       modeler: currentWorkspace.modelers[index],
     }
   } 
-    
-  const modeler = {
-    id: uuidv4(),
-    name,
-    content: defaultModeler.content,
+  
+  const newModeler = {
+    ...defaultModeler,
+    ...modeler
   };
-  currentWorkspace.modelers.push(modeler);
+  currentWorkspace.modelers.push(newModeler);
 
   saveWorkspace();
 
   return {
     success: true,
-    modeler
+    modeler: newModeler,
   }; 
 }
 
@@ -142,7 +150,8 @@ function removeModeler(id) {
 }
 
 module.exports = {
-  getModelerList,
+  getModeler,
+  getAllModelers,
   updateClient,
   removeClient,
   updateModeler,

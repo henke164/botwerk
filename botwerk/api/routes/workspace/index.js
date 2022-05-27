@@ -3,7 +3,8 @@ const router = express.Router();
 
 const {
   getWorkspace,
-  getModelerList,
+  getModeler,
+  getAllModelers,
   updateClient,
   removeModeler,
   updateModeler,
@@ -18,9 +19,24 @@ router.get("/", (req, res) => {
   });
 });
 
+router.get("/modeler/:id", (req, res) => {
+  const modeler = getModeler(req.params.id);
+  res.send(modeler);
+});
+
 router.get("/modeler", (req, res) => {
-  const list = getModelerList();
+  const list = getAllModelers();
   res.send(list);
+});
+
+router.post("/modeler", (req, res) => {
+  const modeler = updateModeler(req.body);
+  res.send(modeler);
+});
+
+router.delete("/modeler/:id", (req, res) => {
+  const status = removeModeler(req.params.id);
+  res.send(status);
 });
 
 router.post("/client", (req, res) => {
@@ -36,16 +52,6 @@ router.delete("/client/:id", (req, res) => {
   res.send({
     success: true
   });
-});
-
-router.post("/modeler", (req, res) => {
-  const modeler = updateModeler(req.body);
-  res.send(modeler);
-});
-
-router.delete("/modeler/:id", (req, res) => {
-  const status = removeModeler(req.params.id);
-  res.send(status);
 });
 
 module.exports = router;

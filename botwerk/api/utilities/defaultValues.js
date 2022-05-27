@@ -2,7 +2,7 @@ const { v4: uuidv4 } = require('uuid');
 
 const defaultModeler = {
   id: uuidv4(),
-  name: "Default Modeler 2.0",
+  name: "Default Modeler",
   rules: {
     update: 
 `// Define rules that describes if the packet creates or updates an object. 

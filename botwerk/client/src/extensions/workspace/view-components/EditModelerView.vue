@@ -2,23 +2,33 @@
 import CodeEditor from "simple-code-editor";
 import TabBar from "../../../components/TabBar.vue";
 import DraggableComponent from "../../../components/DraggableComponent.vue";
-import { post } from "../../../services/apiService";
+import { get, post } from "../../../services/apiService";
 </script>
 <script>
 export default {
   props: ["params"],
   data() {
     return {
-      modeler: {},
+      modelerId: null,
+      modeler: null,
       ruleKey: null,
     };
   },
   watch: {
     params() {
-      this.modeler = JSON.parse(JSON.stringify(this.params.modeler));
+      this.fetchModeler();
     },
   },
   methods: {
+    async fetchModeler() {
+      const { success, modeler } = await get(
+        `/workspace/modeler/${this.params.modeler.id}`
+      );
+      if (!success) {
+        return;
+      }
+      this.modeler = modeler;
+    },
     async handleSave() {
       await post("/workspace/modeler", this.modeler);
       this.params.reload();
@@ -45,8 +55,9 @@ export default {
     },
   },
   mounted() {
-    this.modeler = JSON.parse(JSON.stringify(this.params.modeler));
-    this.onTabSelected(0);
+    this.fetchModeler().then(() => {
+      this.onTabSelected(0);
+    });
   },
 };
 </script>
@@ -66,9 +77,9 @@ export default {
         :max="500"
       ></DraggableComponent>
     </div>
-    <div class="right-bar">
+    <div class="right-bar" v-if="modeler">
       <TabBar :tabs="getTabs()" :onTabSelected="onTabSelected"></TabBar>
-      <div class="editor-wrapper" v-if="modeler && ruleKey">
+      <div class="editor-wrapper" v-if="ruleKey">
         <CodeEditor
           v-model="modeler.rules[ruleKey]"
           class="botwerk-code-editor"
