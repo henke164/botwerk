@@ -37,17 +37,17 @@ export default {
 
       this.client = client;
       this.components = [
-        ...this.params.workspace.modelers.map(m => ({
+        ...this.params.workspace.modelers.map((m) => ({
           id: m.id,
           name: m.name,
-          varName: 'modelers',
-          selected: this.client.modelers.includes(m.id)
+          varName: "modelers",
+          selected: this.client.modelers.includes(m.id),
         })),
-        ...this.params.workspace.actions.map(m => ({
+        ...this.params.workspace.actions.map((m) => ({
           id: m.id,
           name: m.name,
-          varName: 'actions',
-          selected: this.client.actions.includes(m.id)
+          varName: "actions",
+          selected: this.client.actions.includes(m.id),
         })),
       ];
     },
@@ -55,7 +55,9 @@ export default {
       if (e.target.checked) {
         this.client[component.varName].push(component.id);
       } else {
-        const index = this.client[component.varName].map(c => c.id === component.id);
+        const index = this.client[component.varName].map(
+          (c) => c.id === component.id
+        );
         this.client[component.varName].splice(index, 1);
       }
     },
@@ -98,19 +100,18 @@ export default {
         </div>
         <label
           class="component"
-          v-for="component in components.filter(c => 
-            c.name.toLowerCase().includes(componentFilter.toLowerCase()))"
-          v-bind:key="component.id">
+          v-for="component in components.filter((c) =>
+            c.name.toLowerCase().includes(componentFilter.toLowerCase())
+          )"
+          v-bind:key="component.id"
+        >
           <input
             type="checkbox"
             v-model="component.selected"
-            @change="e => onComponentChange(e, component)"
+            @change="(e) => onComponentChange(e, component)"
           />
-          <span
-            class="icon"
-            v-html="ModelerSvg"
-          ></span>
-          <span>{{component.name}}</span>
+          <span class="icon" v-html="ModelerSvg"></span>
+          <span>{{ component.name }}</span>
         </label>
       </div>
       <DraggableComponent
@@ -127,7 +128,7 @@ export default {
 input[type="text"] {
   flex: 1;
   width: 100%;
-  border: 1px solid #595c76!important;
+  border: 1px solid #595c76 !important;
 }
 
 .component {
@@ -137,11 +138,11 @@ input[type="text"] {
 }
 
 .component input {
-  vertical-align: middle;;
+  vertical-align: middle;
 }
 
 .component span {
-  margin-right: 5px
+  margin-right: 5px;
 }
 
 .component:hover {

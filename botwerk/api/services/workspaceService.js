@@ -24,7 +24,6 @@ function loadCachedWorkspace(path) {
   
   try {
     currentWorkspace = JSON.parse(fs.readFileSync(path));
-    delete currentWorkspace.objects;
   } catch {
     currentWorkspace = defaultWorkspace;
   }
@@ -54,7 +53,7 @@ function updateClient({ id, name, actions, modelers }) {
     name,
     actions: actions || [],
     modelers: modelers || [],
-    objects: [],
+    objects: {},
   }
   currentWorkspace.clients.push(client);
   saveWorkspace();
@@ -156,6 +155,11 @@ function getObject(clientId, objectId) {
   return client.objects[objectId];
 }
 
+function deleteObject(clientId, objectId) {
+  const client = currentWorkspace.clients.find(c => c.id === clientId);
+  delete client.objects[objectId];
+}
+
 module.exports = {
   getModeler,
   getAllModelers,
@@ -167,4 +171,5 @@ module.exports = {
   getWorkspace,
   saveWorkspace,
   getObject,
+  deleteObject,
 }

@@ -13,6 +13,11 @@ export default {
   },
   mounted() {
     addAppEventListener("SET_MAIN_PANEL_VIEW", (ev) => {
+      if (!ev) {
+        this.selectedView = null;
+        this.viewParams = null;
+        return;
+      }
       this.selectedView = ev.extensionView;
       this.viewParams = ev.params;
     });

@@ -35,7 +35,9 @@ addEventListener('onSocketEvent', (data) => {
 
   if (data.channel === 'client') {
     broadcast('botwerk', data);
-    updateObjectDataFromEvent(data);
+    if (data.type === 'MESSAGE_RECEIVED') {
+      updateObjectDataFromEvent(data);
+    }
   }
 });
 
@@ -48,11 +50,4 @@ addEventListener('onObjectCreated', ({ clientId }) => {
 
 addEventListener('LOG', (data) => {
   console.log("Error log", data);
-});
-
-updateObjectDataFromEvent({
-  type: 'MESSAGE_RECEIVED',
-  channel: 'client',
-  content: { t: 'USER_DATA', d: { i: '1337', l: '19', n: 'SuperHero1337' } },
-  socketId: 'a6919d0b-f35d-4f16-9c28-60ff160686b8'
 });

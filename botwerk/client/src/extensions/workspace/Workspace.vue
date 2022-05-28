@@ -2,7 +2,10 @@
 import ClientList from "./ClientList.vue";
 import ModelerList from "./ModelerList.vue";
 import { get } from "../../services/apiService";
-import { emitAppEvent } from "../../services/appEventHandler";
+import {
+  addAppEventListener,
+  emitAppEvent,
+} from "../../services/appEventHandler";
 </script>
 
 <script>
@@ -30,6 +33,10 @@ export default {
     },
   },
   mounted() {
+    addAppEventListener("OBJECT_CREATED", () => {
+      console.log("OBJECT CREATED ;D");
+      this.reload();
+    });
     this.reload();
   },
 };

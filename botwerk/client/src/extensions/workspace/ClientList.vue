@@ -12,12 +12,7 @@ import { emitAppEvent } from "../../services/appEventHandler";
 
 <script>
 export default {
-  props: [
-    "workspace",
-    "reload",
-    "selectedItem",
-    "selectItem"
-  ],
+  props: ["workspace", "reload", "selectedItem", "selectItem"],
   data() {
     return {
       showNewClientInput: false,
@@ -27,10 +22,9 @@ export default {
   },
   methods: {
     getComponentName(id) {
-      return [
-        ...this.workspace.modelers,
-        ...this.workspace.actions,
-      ].find(m => m.id === id).name;
+      return [...this.workspace.modelers, ...this.workspace.actions].find(
+        (m) => m.id === id
+      ).name;
     },
     editNewClient() {
       this.newClientInputError = null;
@@ -48,7 +42,7 @@ export default {
     async removeClient(id) {
       const { success } = await del(`/workspace/client/${id}`);
       if (!success) {
-        emitAppEvent("LOG", "Failed to remove client client");
+        emitAppEvent("LOG", `Failed to remove client ${id}`);
         return;
       }
       this.reload();
@@ -64,6 +58,7 @@ export default {
       if (this.expanded[client.id] && this.selectedItem === client.id) {
         this.selectItem(null);
         delete this.expanded[client.id];
+        emitAppEvent("SET_MAIN_PANEL_VIEW", null);
       } else {
         this.selectItem(client.id);
         this.expanded[client.id] = true;
@@ -78,6 +73,7 @@ export default {
       }
     },
     editObject(client, objectId) {
+      this.selectItem(`${client.id}_object_${objectId}`);
       emitAppEvent("SET_MAIN_PANEL_VIEW", {
         extensionView: "EditObjectView",
         params: {
@@ -86,7 +82,17 @@ export default {
           reload: this.reload,
         },
       });
-    }
+    },
+    async removeObject(client, objectId) {
+      const { success } = await del(
+        `/workspace/object/${client.id}/${objectId}`
+      );
+      if (!success) {
+        emitAppEvent("LOG", `Failed to remove object ${objectId}`);
+        return;
+      }
+      this.reload();
+    },
   },
 };
 </script>
@@ -120,15 +126,26 @@ export default {
         ></a>
       </a>
       <div v-if="this.expanded[client.id]">
-        <div v-for="(key, childIdx) in Object.keys(client.objects)" v-bind:key="childIdx">
-          <a class="client-content-child-row list-item" v-on:click="() => editObject(client, key)">
+        <div
+          v-for="(key, childIdx) in Object.keys(client.objects)"
+          v-bind:key="childIdx"
+        >
+          <a
+            class="client-content-child-row list-item"
+            :class="
+              this.selectedItem === `${client.id}_object_${key}`
+                ? 'selected'
+                : ''
+            "
+            v-on:click="() => editObject(client, key)"
+          >
             <span class="icon" v-html="CubeSvg"></span>
-            <span class="list-item-text">{{
-              key
-            }}</span>
+            <span class="list-item-text">{{ key }}</span>
+            <a class="remove" v-on:click="removeObject(client, key)"
+              ><span v-html="CrossSvg"></span
+            ></a>
           </a>
         </div>
-        <!-- END -->
       </div>
     </div>
     <NewItemInput

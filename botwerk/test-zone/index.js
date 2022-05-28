@@ -15,7 +15,9 @@ app.get('/', (req, res) => {
 
 app.post('/request-package', (req, res) => {
   console.log("Sending...", req.body);
-  client.send(JSON.stringify(req.body));
+  if (client) {
+    client.send(JSON.stringify(req.body));
+  }
 });
 
 app.listen(port);

@@ -1,4 +1,4 @@
-const { getWorkspace } = require('../services/workspaceService');
+const { getWorkspace, saveWorkspace } = require('../services/workspaceService');
 const { emit } = require('./eventHandler');
 
 function updateObjectInClients(clients, modeler, content) {
@@ -13,15 +13,24 @@ function updateObjectInClients(clients, modeler, content) {
     try {
       const obj = mapObject(content);
       const isNewObject = !client.objects[obj._id];
+      const compareFrom = JSON.stringify(client.objects[obj._id]);
+
       client.objects[obj._id] = {
         ...client.objects[obj._id],
-        ...obj
+        ...obj,
+        _modeler: modeler.id,
       };
       
+      const compareTo = JSON.stringify(client.objects[obj._id]);
+
       if (isNewObject) {
         emit("onObjectCreated", {
           clientId: client.id,
         });
+      }
+
+      if (isNewObject || compareFrom !== compareTo) {
+        saveWorkspace();
       }
     } catch (e) {
       emit("LOG", `Error occured in modeler "${
@@ -46,6 +55,10 @@ function getClientsUsingModeler(clients, modelerId) {
 
 function updateObjectDataFromEvent(ev) {
   const { content } = ev;
+  console.log("Updating content", content);
+  if (!content) {
+    return;
+  }
   const socketIndex = 0;
   const workspace = getWorkspace();
   for (let i = 0; i < workspace.modelers.length; i++) {

@@ -62,7 +62,7 @@ window.botwerk = {
 window.botwerk.socket.onopen = function () {
   window.botwerk.socket.send(JSON.stringify({
     type: "LOG",
-    content: "Socket injector connected:" + window.location.href
+    content: "Socket injector connected: " + window.location.href
   }));
 }
 

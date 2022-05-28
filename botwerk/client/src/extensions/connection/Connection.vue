@@ -13,7 +13,6 @@ export default {
       const connection = new WebSocket(this.wsHost);
       connection.onmessage = (pkg) => {
         try {
-          console.log("Incoming:", pkg.data.toString());
           const { type, socketId, clientId, content } = JSON.parse(pkg.data.toString());
           emitAppEvent(type, content, { 
             socketId,

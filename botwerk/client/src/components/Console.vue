@@ -25,9 +25,7 @@ export default {
   mounted() {
     addAppEventListener("SOCKET_CONNECTED", (content, options) => {
       const { clientId, socketId } = options;
-      this.websockets[socketId] = [
-        `Socket ${socketId} connected`,
-      ];
+      this.websockets[socketId] = [`Socket ${socketId} connected`];
     });
 
     addAppEventListener("SOCKET_DISCONNECTED", (content, options) => {
