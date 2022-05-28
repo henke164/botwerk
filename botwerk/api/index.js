@@ -29,14 +29,30 @@ const server = app.listen(port, () => {
 startWebsocket(server);
 
 addEventListener('onSocketEvent', (data) => {
+  if (data.type === 'LOG') {
+    console.log(data.content);
+  }
+
   if (data.channel === 'client') {
     broadcast('botwerk', data);
     updateObjectDataFromEvent(data);
   }
 });
 
+addEventListener('onObjectCreated', ({ clientId }) => {
+  broadcast('botwerk', {
+    type: 'OBJECT_CREATED',
+    clientId
+  });
+});
+
+addEventListener('LOG', (data) => {
+  console.log("Error log", data);
+});
+
 updateObjectDataFromEvent({
   type: 'MESSAGE_RECEIVED',
-  id: '32255cde-9c04-4c3b-9e15-8c765e23ab38',
-  content: { t: 'USER_DATA', d: { i: '1337', l: '19', n: 'SuperHero1337' } }
+  channel: 'client',
+  content: { t: 'USER_DATA', d: { i: '1337', l: '19', n: 'SuperHero1337' } },
+  socketId: 'a6919d0b-f35d-4f16-9c28-60ff160686b8'
 });
