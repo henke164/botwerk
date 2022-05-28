@@ -28,8 +28,15 @@ const server = app.listen(port, () => {
 
 startWebsocket(server);
 
-addEventListener('onClientEvent', (data) => {
-  broadcast('botwerk', data);
+addEventListener('onSocketEvent', (data) => {
+  if (data.channel === 'client') {
+    broadcast('botwerk', data);
+    updateObjectDataFromEvent(data);
+  }
+});
 
-  updateObjectDataFromEvent(data);
+updateObjectDataFromEvent({
+  type: 'MESSAGE_RECEIVED',
+  id: '32255cde-9c04-4c3b-9e15-8c765e23ab38',
+  content: { t: 'USER_DATA', d: { i: '1337', l: '19', n: 'SuperHero1337' } }
 });

@@ -23,23 +23,24 @@ export default {
     },
   },
   mounted() {
-    addAppEventListener("SOCKET_CONNECTED", (id) => {
-      this.websockets[id] = [
-        `Socket ${id} connected`,
+    addAppEventListener("SOCKET_CONNECTED", (content, options) => {
+      const { clientId, socketId } = options;
+      this.websockets[socketId] = [
+        `Socket ${socketId} connected`,
       ];
     });
 
-    addAppEventListener("SOCKET_DISCONNECTED", (id) => {
-      delete this.websockets[id];
+    addAppEventListener("SOCKET_DISCONNECTED", (content, options) => {
+      const { clientId, socketId } = options;
+      delete this.websockets[socketId];
     });
 
     addAppEventListener("MESSAGE_RECEIVED", (content, options) => {
-      const websocketId = options.id;
-
-      if (!this.websockets[websocketId]) {
-        this.websockets[websocketId] = [];
+      const { clientId, socketId } = options;
+      if (!this.websockets[socketId]) {
+        this.websockets[socketId] = [];
       }
-      this.websockets[websocketId].push(
+      this.websockets[socketId].push(
         `<span style='color: #e14537'>▼</span> ${JSON.stringify(content)}`
       );
     });
@@ -148,13 +149,14 @@ export default {
 
 a {
   margin-left: 10px;
-  color: white;
+  color: #ccc;
   background: none;
   border: none;
 }
 
 a.active {
-  font-weight: bold;
+  font-weight: bolder;
+  color: white;
 }
 
 a:hover {

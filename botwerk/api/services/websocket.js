@@ -19,42 +19,47 @@ async function startWebsocket(server) {
   ws.on("connection", (socket, req) => {
     console.log("Incoming connection!");
     const [_path, params] = req?.url?.split("?");
-    const id = uuidv4();
+    const socketId = uuidv4();
     const channel = params;
   
     if (!connections[channel]) {
       connections[channel] = {};
     }
 
-    connections[channel][id] = socket;
+    connections[channel][socketId] = socket;
     
     socket.on('message', (pkg) => {
-      const package = JSON.parse(pkg);
+      let {
+        type,
+        content,
+      } = JSON.parse(pkg);
+
       try {
-        package.content = JSON.parse(package.content);
+        content = JSON.parse(content);
       } catch {
         console.log("Package is not json");
       }
 
-      emit('onClientEvent', package);
+      emit('onSocketEvent', {
+        type,
+        channel,
+        content,
+        socketId
+      });
     });
 
     socket.on("close", () => {
-      console.log("disconnected!");
-      emit('onClientEvent', {
+      emit('onSocketEvent', {
         type: 'SOCKET_DISCONNECTED',
-        id,
+        channel,
+        socketId,
       });
-      delete connections[channel][id];
+      delete connections[channel][socketId];
       if (Object.keys(connections[channel]).length === 0) {
         delete connections[channel];
       }
     });
   });
-
-  ws.on("close", (socket) => {
-    console.log('socket closed', socket.id)
-  })
 
   return ws;
 };

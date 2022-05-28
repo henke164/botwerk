@@ -1,12 +1,3 @@
-function uuid() {
-  var u='',i=0;
-  while(i++<36) {
-    var c='xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'[i-1],r=Math.random()*16|0,v=c=='x'?r:(r&0x3|0x8);
-    u+=(c=='-'||c=='4')?c:v.toString(16)
-  }
-  return u;
-}
-
 var sockets = [];
 
 function modifyWebSocketConstructor() {
@@ -26,19 +17,17 @@ function modifyWebSocketConstructor() {
       ws = new OrigWebSocket();
     }
 
-    ws.id = uuid();
-
     wsAddListener(ws, 'message', function(event) {
-      window.botwerkApiSocket.send(JSON.stringify({
+      window.botwerk.socket.send(JSON.stringify({
         type: "MESSAGE_RECEIVED",
-        id: this.id,
+        clientId: botwerk.clientId,
         content: event.data,
       }));
     });
 
-    window.botwerkApiSocket.send(JSON.stringify({
+    window.botwerk.socket.send(JSON.stringify({
       type: "SOCKET_CONNECTED",
-      id: ws.id
+      clientId: botwerk.clientId,
     }));
 
     sockets.push(ws);
@@ -52,10 +41,9 @@ function modifyWebSocketConstructor() {
   wsSend = wsSend.apply.bind(wsSend);
   OrigWebSocket.prototype.send = function (data) {
     try {
-      if (this !== window.botwerkApiSocket) {
-        window.botwerkApiSocket.send(JSON.stringify({
+      if (this !== window.botwerk.socket) {
+        window.botwerk.socket.send(JSON.stringify({
           type: "MESSAGE_SENT",
-          id: this.id,
           content: data,
         }));
       }
@@ -66,16 +54,19 @@ function modifyWebSocketConstructor() {
   };
 }
 
-window.botwerkApiSocket = new WebSocket("ws://localhost:3001/websockets?client");
+window.botwerk = {
+  clientId: document.getElementById('botwerk-clientId'),
+  socket: new WebSocket("ws://localhost:3001/websockets?client")
+}
 
-window.botwerkApiSocket.onopen = function () {
-  window.botwerkApiSocket.send(JSON.stringify({
+window.botwerk.socket.onopen = function () {
+  window.botwerk.socket.send(JSON.stringify({
     type: "LOG",
     content: "Socket injector connected:" + window.location.href
   }));
 }
 
-window.botwerkApiSocket.onmessage = function (message) {
+window.botwerk.socket.onmessage = function (message) {
   console.log('message', message);
 }
 

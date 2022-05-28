@@ -14,8 +14,11 @@ export default {
       connection.onmessage = (pkg) => {
         try {
           console.log("Incoming:", pkg.data.toString());
-          const { type, id, content } = JSON.parse(pkg.data.toString());
-          emitAppEvent(type, content, { id });
+          const { type, socketId, clientId, content } = JSON.parse(pkg.data.toString());
+          emitAppEvent(type, content, { 
+            socketId,
+            clientId,
+          });
         } catch (e) {
           emitAppEvent("LOG", e.message);
         }

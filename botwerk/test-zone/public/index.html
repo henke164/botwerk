@@ -50,7 +50,7 @@
     function waitForScriptInject() {
       return new Promise(resolve => {
         const ival = setInterval(() => {
-          if (window.botwerkApiSocket !== undefined) {
+          if (window.botwerk !== undefined) {
             clearInterval(ival);
             resolve();
           }
