@@ -53,13 +53,6 @@ export default {
       }
       this.reload();
     },
-    getClientLists(client) {
-      return [
-        ["actions", client.actions],
-        ["modelers", client.modelers],
-        ["objects", client.objects],
-      ];
-    },
     toggleExpand(key) {
       if (this.expanded[key]) {
         delete this.expanded[key];
@@ -117,35 +110,64 @@ export default {
         ></a>
       </a>
       <div v-if="this.expanded[client.id]">
-        <div v-for="item in getClientLists(client)" v-bind:key="item[0]">
-          <a
-            class="client-content-row list-item"
-            v-on:click="() => toggleExpand(`${client.id}_${item[0]}`)"
-          >
-            <span
-              class="icon"
-              v-html="
-                this.expanded[`${client.id}_${item[0]}`]
-                  ? ArrowDownSvg
-                  : ArrowRightSvg
-              "
-            ></span>
-            <span class="list-item-text">{{ `${item[0]}` }}</span>
-            <span class="list-item-count">
-              {{ `( ${item[1] ? item[1].length : 0} )` }}
-            </span>
-          </a>
-          <div v-if="this.expanded[`${client.id}_${item[0]}`]">
-            <div v-for="(child, childIdx) in item[1]" v-bind:key="childIdx">
-              <a class="client-content-child-row list-item">
-                <span class="icon" v-html="CubeSvg"></span>
-                <span class="list-item-text">{{
-                  getComponentName(child)
-                }}</span>
-              </a>
-            </div>
+        <!-- Modelers -->
+        <a
+          class="client-content-row list-item"
+          v-on:click="() => toggleExpand(`${client.id}_modelers`)"
+        >
+          <span
+            class="icon"
+            v-html="
+              this.expanded[`${client.id}_modelers`]
+                ? ArrowDownSvg
+                : ArrowRightSvg
+            "
+          ></span>
+          <span class="list-item-text">modelers</span>
+          <span class="list-item-count">
+            {{ `( ${client.modelers.length} )` }}
+          </span>
+        </a>
+        <div v-if="this.expanded[`${client.id}_modelers`]">
+          <div v-for="(child, childIdx) in client.modelers" v-bind:key="childIdx">
+            <a class="client-content-child-row list-item">
+              <span class="icon" v-html="CubeSvg"></span>
+              <span class="list-item-text">{{
+                getComponentName(child)
+              }}</span>
+            </a>
           </div>
         </div>
+        <!-- END -->
+        <!-- Objects -->
+        <a
+          class="client-content-row list-item"
+          v-on:click="() => toggleExpand(`${client.id}_objects`)"
+        >
+          <span
+            class="icon"
+            v-html="
+              this.expanded[`${client.id}_objects`]
+                ? ArrowDownSvg
+                : ArrowRightSvg
+            "
+          ></span>
+          <span class="list-item-text">objects</span>
+          <span class="list-item-count">
+            {{ `( ${Object.keys(client.objects).length} )` }}
+          </span>
+        </a>
+        <div v-if="this.expanded[`${client.id}_objects`]">
+          <div v-for="(key, childIdx) in Object.keys(client.objects)" v-bind:key="childIdx">
+            <a class="client-content-child-row list-item">
+              <span class="icon" v-html="CubeSvg"></span>
+              <span class="list-item-text">{{
+                key
+              }}</span>
+            </a>
+          </div>
+        </div>
+        <!-- END -->
       </div>
     </div>
     <NewItemInput

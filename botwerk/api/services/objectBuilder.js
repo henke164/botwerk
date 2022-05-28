@@ -15,10 +15,9 @@ function updateObjectInClients(clients, modeler, content) {
       const isNewObject = !client.objects[obj._id];
       client.objects[obj._id] = {
         ...client.objects[obj._id],
-        obj
+        ...obj
       };
       
-      console.log(obj);
       if (isNewObject) {
         emit("onObjectCreated", {
           clientId: client.id,
