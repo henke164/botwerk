@@ -5,6 +5,7 @@ const cors = require('cors');
 
 const { startWebsocket, broadcast } = require('./services/websocket');
 const { addEventListener } = require('./services/eventHandler');
+const { updateObjectDataFromEvent } = require('./services/objectBuilder.js');
 
 const app = express();
 const port = 3001;
@@ -27,6 +28,8 @@ const server = app.listen(port, () => {
 
 startWebsocket(server);
 
-addEventListener('client', (data) => {
+addEventListener('onClientEvent', (data) => {
   broadcast('botwerk', data);
+
+  updateObjectDataFromEvent(data);
 });

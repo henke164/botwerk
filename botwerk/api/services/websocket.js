@@ -29,13 +29,21 @@ async function startWebsocket(server) {
     connections[channel][id] = socket;
     
     socket.on('message', (pkg) => {
-      emit('client', JSON.parse(pkg.toString()));
+      const package = JSON.parse(pkg);
+      try {
+        package.content = JSON.parse(package.content);
+      } catch {
+        console.log("Package is not json");
+      }
+
+      emit('onClientEvent', package);
     });
 
     socket.on("close", () => {
-      emit('client', {
+      console.log("disconnected!");
+      emit('onClientEvent', {
         type: 'SOCKET_DISCONNECTED',
-        content: id
+        id,
       });
       delete connections[channel][id];
       if (Object.keys(connections[channel]).length === 0) {
@@ -56,16 +64,8 @@ function broadcast(channel, pkg) {
     return;
   }
 
-  console.log('PACKAGE', pkg);
-  let str = pkg;
-  try {
-    str = JSON.stringify(pkg);
-  } catch (e) {
-    console.log('Couldnt parse', str);
-  }
-
   for (const key of Object.keys(connections[channel])) {
-    connections[channel][key].send(str);
+    connections[channel][key].send(JSON.stringify(pkg));
   }
 }
 

@@ -12,10 +12,10 @@ export default {
     connectWs() {
       const connection = new WebSocket(this.wsHost);
       connection.onmessage = (pkg) => {
-        console.log(pkg);
         try {
-          const { type, content } = JSON.parse(pkg.data.toString());
-          emitAppEvent(type, content);
+          console.log("Incoming:", pkg.data.toString());
+          const { type, id, content } = JSON.parse(pkg.data.toString());
+          emitAppEvent(type, content, { id });
         } catch (e) {
           emitAppEvent("LOG", e.message);
         }

@@ -8,13 +8,13 @@ function addAppEventListener(eventName, cb) {
   eventListeners[eventName].push(cb);
 }
 
-function emitAppEvent(eventName, value) {
+function emitAppEvent(eventName, value, ...params) {
   if (!eventListeners[eventName]) {
     return;
   }
 
   eventListeners[eventName].forEach((cb) => {
-    cb(value);
+    cb(value, ...params);
   });
 }
 

@@ -29,20 +29,16 @@ function modifyWebSocketConstructor() {
     ws.id = uuid();
 
     wsAddListener(ws, 'message', function(event) {
-      const pkg = JSON.parse(event.data);
       window.botwerkApiSocket.send(JSON.stringify({
-        type: "WEBSOCKET",
-        content: {
-          id: ws.id,
-          dir: 'IN',
-          pkg,
-        }
+        type: "MESSAGE_RECEIVED",
+        id: this.id,
+        content: event.data,
       }));
     });
 
     window.botwerkApiSocket.send(JSON.stringify({
       type: "SOCKET_CONNECTED",
-      content: ws.id
+      id: ws.id
     }));
 
     sockets.push(ws);
@@ -57,14 +53,10 @@ function modifyWebSocketConstructor() {
   OrigWebSocket.prototype.send = function (data) {
     try {
       if (this !== window.botwerkApiSocket) {
-        console.log(this)
         window.botwerkApiSocket.send(JSON.stringify({
-          type: "WEBSOCKET",
-          content: {
-            id: this.id,
-            dir: 'OUT',
-            pkg: data,
-          },
+          type: "MESSAGE_SENT",
+          id: this.id,
+          content: data,
         }));
       }
     } catch(e) {

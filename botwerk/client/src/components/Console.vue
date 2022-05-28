@@ -24,24 +24,34 @@ export default {
   },
   mounted() {
     addAppEventListener("SOCKET_CONNECTED", (id) => {
-      this.websockets[id] = [];
+      this.websockets[id] = [
+        `Socket ${id} connected`,
+      ];
     });
 
     addAppEventListener("SOCKET_DISCONNECTED", (id) => {
       delete this.websockets[id];
     });
 
-    addAppEventListener("WEBSOCKET", (content) => {
-      console.log(content);
-      if (!this.websockets[content.id]) {
-        this.websockets[content.id] = [];
+    addAppEventListener("MESSAGE_RECEIVED", (content, options) => {
+      const websocketId = options.id;
+
+      if (!this.websockets[websocketId]) {
+        this.websockets[websocketId] = [];
       }
-      this.websockets[content.id].push(
-        `${
-          content.dir === "IN"
-            ? "<span style='color: #e14537'>▼</span>"
-            : "<span style='color: #37e16d'>▲</span>"
-        } ${JSON.stringify(content.pkg)}`
+      this.websockets[websocketId].push(
+        `<span style='color: #e14537'>▼</span> ${JSON.stringify(content)}`
+      );
+    });
+
+    addAppEventListener("MESSAGE_SENT", (content, options) => {
+      const websocketId = options.id;
+
+      if (!this.websockets[websocketId]) {
+        this.websockets[websocketId] = [];
+      }
+      this.websockets[websocketId].push(
+        `<span style='color: #e14537'>▲</span> ${JSON.stringify(content)}`
       );
     });
 

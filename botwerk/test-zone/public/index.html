@@ -1,0 +1,101 @@
+<html>
+<style>
+  body {
+    text-align: center;
+  }
+
+  .hidden {
+    display: none;
+  }
+</style>
+
+<body>
+  <h1>Testing area</h1>
+  <div id="step1">1. Inject script to this client</div>
+  <div id="step2" class="hidden">
+    2. Now the websocket between this client and its server will be intercepted.<br>
+    Press connect to make this client connect to its server.<br>
+    The connection should have appeared in botwerk output if connected.
+    <br />
+    <button onclick="connect()">Connect</button>
+  </div>
+  <div id="step3" class="hidden">
+    <p>
+      3. The server now sent a package upon connection that tells this client it has successfully connected.
+      The message should be visible in the "Websocket 1" tab.
+    </p>
+    <p>
+      If there are multiple websockets I.E (a chat socket, a game socket, etc) they will be separated.
+      Now this client should get a new "Player" from the server. What should the id, name and level be?
+    </p>
+    <label>Id:<input id="playerId" type="text" placeholder="id" value="1337"></input></label>
+    <label>Name:<input id="playerName" type="text" placeholder="name" value="SuperHero1337"></input></label>
+    <label>Level:<input id="playerLevel" type="text" placeholder="level" value="19"></input></label>
+    <button onclick="getUserFromSockets()">OK</button>
+  </div>
+  <div id="step4" class="hidden">
+    <p>
+      4. A package should now be found in the "Websocket 1" output in Botwerk with the type "USER_DATA",
+      and the provided info.
+    </p>
+  </div>
+
+
+  <script>
+    var step1 = document.getElementById('step1');
+    var step2 = document.getElementById('step2');
+    var step3 = document.getElementById('step3');
+    var step4 = document.getElementById('step4');
+
+    function waitForScriptInject() {
+      return new Promise(resolve => {
+        const ival = setInterval(() => {
+          if (window.botwerkApiSocket !== undefined) {
+            clearInterval(ival);
+            resolve();
+          }
+        }, 500);
+      });
+    }
+
+    function connect() {
+      var socket = new WebSocket("ws://localhost:3003");
+      step2.classList.add("hidden");
+      step3.classList.remove("hidden");
+    }
+    
+    async function getUserFromSockets() {
+      step3.classList.add("hidden");
+      step4.classList.remove("hidden");
+
+      const res = await fetch('/request-package', {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({
+          t: "USER_DATA", // Type
+          d: { // Data
+            i: document.getElementById('playerId').value, // Id
+            l: document.getElementById('playerLevel').value, // Level
+            n: document.getElementById('playerName').value // Name
+          }
+        })
+      });
+
+      if (!res.status) {
+        alert("Test-zone api request failed!");
+        return;
+      }
+    }
+
+    (async () => {
+      await waitForScriptInject();
+      step1.classList.add("hidden");
+      step2.classList.remove("hidden");
+      getUserFromSockets();
+    })();
+  </script>
+</body>
+
+</html>

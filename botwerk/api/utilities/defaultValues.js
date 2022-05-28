@@ -11,7 +11,7 @@ function onSocketPacketReceived(socketIndex, packet) {
         return false;
     }
     const { type, data } = JSON.parse(packet);
-    return type === "user_data";
+    return type === "USER_DATA";
 }
 `,
     remove: 
@@ -21,7 +21,7 @@ function onSocketPacketReceived(socketIndex, packet) {
         return false;
     }
     const { type, data } = JSON.parse(packet);
-    return type === "user_removed";
+    return type === "USER_REMOVED";
 }
 `,
     map: 
