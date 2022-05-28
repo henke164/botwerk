@@ -5,9 +5,10 @@ const {
   getWorkspace,
   getModeler,
   getAllModelers,
-  updateClient,
   removeModeler,
   updateModeler,
+  getClient,
+  updateClient,
   removeClient,
 } = require('../../services/workspaceService');
 
@@ -39,6 +40,14 @@ router.delete("/modeler/:id", (req, res) => {
   res.send(status);
 });
 
+router.get("/client/:id", (req, res) => {
+  const client = getClient(req.params.id);
+  res.send({
+    success: true,
+    client
+  });
+});
+
 router.post("/client", (req, res) => {
   const client = updateClient(req.body);
   res.send({
@@ -48,9 +57,9 @@ router.post("/client", (req, res) => {
 });
 
 router.delete("/client/:id", (req, res) => {
-  const client = removeClient(req.params.id);
+  const success = removeClient(req.params.id);
   res.send({
-    success: true
+    success
   });
 });
 

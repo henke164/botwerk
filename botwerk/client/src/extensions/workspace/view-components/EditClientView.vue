@@ -10,75 +10,49 @@ export default {
   props: ["params"],
   data() {
     return {
-      modelerId: null,
-      modeler: null,
-      ruleKey: null,
+      client: null,
+      clientId: null,
     };
   },
   watch: {
     params() {
-      this.fetchModeler();
+      this.fetchClient();
     },
   },
   methods: {
-    async fetchModeler() {
-      const { success, modeler } = await get(
-        `/workspace/modeler/${this.params.modeler.id}`
+    async fetchClient() {
+      const { success, client } = await get(
+        `/workspace/client/${this.params.client.id}`
       );
 
       if (!success) {
         return;
       }
 
-      this.modeler = modeler;
+      this.client = client;
     },
     async handleSave() {
-      if (this.modeler.name.length === 0) {
+      if (this.client.name.length === 0) {
         return;
       }
 
-      await post("/workspace/modeler", this.modeler);
-      emitAppEvent(
-        "LOG",
-        `Successfully updated modeller: ${this.modeler.name}!`
-      );
+      await post("/workspace/modeler", this.client);
+      emitAppEvent("LOG", `Successfully updated client: ${this.client.name}!`);
       this.params.reload();
-    },
-    onTabSelected(index) {
-      const tab = this.getTabs()[index];
-      this.ruleKey = tab.ruleKey;
-    },
-    getTabs() {
-      return [
-        {
-          title: "Create / Update Object Rules",
-          ruleKey: "update",
-        },
-        {
-          title: "Remove Object Rules",
-          ruleKey: "remove",
-        },
-        {
-          title: "Mapper",
-          ruleKey: "map",
-        },
-      ];
     },
   },
   mounted() {
-    this.fetchModeler().then(() => {
-      this.onTabSelected(0);
-    });
+    this.fetchClient();
   },
 };
 </script>
 
 <template>
   <div class="panel">
-    <div class="left-bar" v-if="modeler">
-      <h4>EDIT MODELER</h4>
+    <div class="left-bar" v-if="client">
+      <h4>EDIT CLIENT</h4>
       <div class="input-wrapper">
-        <input type="text" v-model="modeler.name" />
+        <input type="text" v-model="client.name" />
       </div>
       <button v-on:click="handleSave">Save changes</button>
 
@@ -88,15 +62,15 @@ export default {
         :max="500"
       ></DraggableComponent>
     </div>
-    <div class="right-bar" v-if="modeler">
-      <TabBar :tabs="getTabs()" :onTabSelected="onTabSelected"></TabBar>
-      <div class="editor-wrapper" v-if="ruleKey">
-        <CodeEditor
-          v-model="modeler.rules[ruleKey]"
-          class="botwerk-code-editor"
-        ></CodeEditor>
-      </div>
+    <div class="left-bar" v-if="client">
+      <div class="header">Components</div>
+      <DraggableComponent
+        :side="'right'"
+        :min="150"
+        :max="500"
+      ></DraggableComponent>
     </div>
+    <div class="right-bar" v-if="client"></div>
   </div>
 </template>
 
@@ -109,6 +83,10 @@ input[type="text"] {
 
 .input-wrapper {
   display: flex;
+}
+
+.header {
+  margin-top: 20px;
 }
 
 .panel {

@@ -29,7 +29,7 @@ export default {
       >
         <component
           v-if="selectedView === viewKey"
-          v-bind:is="views[viewKey].component"
+          v-bind:is="views[viewKey]"
           :params="this.viewParams"
         ></component>
       </div>

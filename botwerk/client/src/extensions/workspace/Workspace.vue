@@ -13,6 +13,7 @@ export default {
       showNewClientInput: false,
       newClientInputError: null,
       expanded: {},
+      selectedItem: null,
     };
   },
   methods: {
@@ -24,6 +25,9 @@ export default {
         emitAppEvent("LOG", "Failed to load workspace");
       }
     },
+    handleItemSelected(id) {
+      this.selectedItem = id;
+    },
   },
   mounted() {
     this.reload();
@@ -34,8 +38,18 @@ export default {
 <template>
   <div class="panel">
     <h4>WORKSPACE</h4>
-    <ClientList :reload="reload" :clients="this.workspace.clients" />
-    <ModelerList :reload="reload" :modelers="this.workspace.modelers" />
+    <ClientList
+      :reload="reload"
+      :clients="this.workspace.clients"
+      :selectedItem="selectedItem"
+      :selectItem="handleItemSelected"
+    />
+    <ModelerList
+      :reload="reload"
+      :modelers="this.workspace.modelers"
+      :selectedItem="selectedItem"
+      :selectItem="handleItemSelected"
+    />
   </div>
 </template>
 

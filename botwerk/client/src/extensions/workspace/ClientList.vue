@@ -12,7 +12,7 @@ import { emitAppEvent } from "../../services/appEventHandler";
 
 <script>
 export default {
-  props: ["clients", "reload"],
+  props: ["clients", "reload", "selectedItem", "selectItem"],
   data() {
     return {
       showNewClientInput: false,
@@ -35,18 +35,34 @@ export default {
       this.reload();
     },
     async removeClient(id) {
-      const { success } = await del(`/workspace/client/${id}`)
+      const { success } = await del(`/workspace/client/${id}`);
       if (!success) {
         emitAppEvent("LOG", "Failed to remove client client");
         return;
       }
       this.reload();
     },
-    expandKey(id) {
-      if (this.expanded[id]) {
-        delete this.expanded[id];
+    getClientLists(client) {
+      return [
+        ["actions", client.actions],
+        ["modelers", client.modelers],
+        ["objects", client.objects],
+      ];
+    },
+    selectClient(client) {
+      if (this.expanded[client.id] && this.selectedItem === client.id) {
+        this.selectItem(null);
+        delete this.expanded[client.id];
       } else {
-        this.expanded[id] = true;
+        this.selectItem(client.id);
+        this.expanded[client.id] = true;
+        emitAppEvent("SET_MAIN_PANEL_VIEW", {
+          extensionView: "EditClientView",
+          params: {
+            client,
+            reload: this.reload,
+          },
+        });
       }
     },
   },
@@ -67,27 +83,22 @@ export default {
       </div>
     </div>
     <div v-for="client in clients" v-bind:key="client">
-      <a class="list-item">
+      <a
+        class="list-item"
+        :class="this.selectedItem === client.id ? 'selected' : ''"
+        v-on:click="selectClient(client)"
+      >
         <span
           class="icon"
           v-html="this.expanded[client.id] ? ArrowDownSvg : ArrowRightSvg"
         ></span>
-        <span class="list-item-text" v-on:click="expandKey(client.id)">{{
-          client.name
-        }}</span>
+        <span class="list-item-text">{{ client.name }}</span>
         <a class="remove" v-on:click="removeClient(client.id)"
           ><span v-html="CrossSvg"></span
         ></a>
       </a>
       <div v-if="this.expanded[client.id]">
-        <div
-          v-for="(item, idx) in [
-            ['actions', client.actions],
-            ['modelers', client.modelers],
-            ['objects', client.objects],
-          ]"
-          v-bind:key="idx"
-        >
+        <div v-for="item in getClientLists(client)" v-bind:key="item.id">
           <a class="client-content-row list-item">
             <span
               class="icon"
@@ -97,24 +108,18 @@ export default {
                   : ArrowRightSvg
               "
             ></span>
-            <span
-              class="list-item-text"
-              v-on:click="expandKey(`${client.id}_${item[0]}`)"
-              >{{ `${item[0]}` }}</span
-            >
+            <span class="list-item-text">{{ `${item[0]}` }}</span>
             <span class="list-item-count">
               {{ `( ${item[1] ? item[1].length : 0} )` }}
             </span>
           </a>
-          <div v-if="this.expanded[`${client.id}_${item[0]}`]">
-            <div v-for="(child, childIdx) in item[1]" v-bind:key="childIdx">
-              <a class="client-content-child-row list-item">
-                <span class="icon" v-html="CubeSvg"></span>
-                <span class="list-item-text" v-on:click="editFile(child.id)">{{
-                  child.name
-                }}</span>
-              </a>
-            </div>
+          <div v-for="(child, childIdx) in item[1]" v-bind:key="childIdx">
+            <a class="client-content-child-row list-item">
+              <span class="icon" v-html="CubeSvg"></span>
+              <span class="list-item-text" v-on:click="editFile(child.id)">{{
+                child.name
+              }}</span>
+            </a>
           </div>
         </div>
       </div>
@@ -214,5 +219,11 @@ a {
 .list-item:hover {
   background: #2a2c3f;
   cursor: pointer;
+}
+
+.list-item.selected {
+  background: #007aa6;
+  box-shadow: inset 0px 0px 2px 1px #81c9e4;
+  z-index: 2;
 }
 </style>

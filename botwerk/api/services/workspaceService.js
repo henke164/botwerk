@@ -61,22 +61,23 @@ function updateClient({ id, name, actions, modelers }) {
   return client;
 }
 
+function getClient(id) {
+  const client = currentWorkspace.clients.find(m => m.id === id);
+  return client;
+
+}
+
 function removeClient(id) {
   const index = currentWorkspace.clients.map(m => m.id).indexOf(id);
   if (index < 0) {
-    return {
-      success: false,
-      error: "Client not found",
-    };
+    return false;
   }
 
   currentWorkspace.clients.splice(index, 1);
   
   saveWorkspace();
 
-  return {
-    success: true,
-  };
+  return true;
 }
 
 /* Modelers */
@@ -119,7 +120,8 @@ function updateModeler(modeler) {
   
   const newModeler = {
     ...defaultModeler,
-    ...modeler
+    ...modeler,
+    id: uuidv4(),
   };
   currentWorkspace.modelers.push(newModeler);
 
@@ -152,10 +154,11 @@ function removeModeler(id) {
 module.exports = {
   getModeler,
   getAllModelers,
-  updateClient,
-  removeClient,
   updateModeler,
   removeModeler,
+  getClient,
+  updateClient,
+  removeClient,
   getWorkspace,
   saveWorkspace
 }

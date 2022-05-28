@@ -9,17 +9,16 @@ import { emitAppEvent } from "../../services/appEventHandler";
 
 <script>
 export default {
-  props: ["modelers", "reload"],
+  props: ["modelers", "reload", "selectedItem", "selectItem"],
   data() {
     return {
-      selectedIndex: null,
       showNewModelerInput: false,
     };
   },
   methods: {
     openEditModelerView(modeler) {
       emitAppEvent("SET_MAIN_PANEL_VIEW", {
-        extensionView: "ModelLogicCreate",
+        extensionView: "EditModelerView",
         params: {
           modeler,
           reload: this.reload,
@@ -46,7 +45,7 @@ export default {
       }
       this.showNewModelerInput = false;
       await this.reload();
-      this.selectedIndex = this.modelers.length - 1;
+      this.selectItem(res.modeler.id);
       this.openEditModelerView(res.modeler);
     },
     async removeModeler(id) {
@@ -59,11 +58,11 @@ export default {
       this.closeEditModelerView();
     },
     toggleSelectModeler(modeler) {
-      if (this.selectedIndex === this.modelers.indexOf(modeler)) {
-        this.selectedIndex = null;
+      if (this.selectedItem === modeler.id) {
+        this.selectItem(null);
         this.closeEditModelerView();
       } else {
-        this.selectedIndex = this.modelers.indexOf(modeler);
+        this.selectItem(modeler.id);
         this.openEditModelerView(modeler);
       }
     },
@@ -87,7 +86,7 @@ export default {
     <div v-for="(modeler, index) in modelers" v-bind:key="index">
       <a
         class="list-item"
-        :class="selectedIndex === index ? 'selected' : ''"
+        :class="this.selectedItem === modeler.id ? 'selected' : ''"
         v-on:click="toggleSelectModeler(modeler)"
       >
         <span class="icon" v-html="CubeSvg"></span>

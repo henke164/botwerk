@@ -21,12 +21,11 @@ export default {
 
 <style scoped>
 .side-panel {
-  width: 320px;
+  min-width: 320px;
   height: 100vh;
   background: #222336;
   position: relative;
   padding: 0px 15px;
-  min-width: 150px;
 }
 
 .drag-resize:hover {
