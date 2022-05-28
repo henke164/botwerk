@@ -10,6 +10,7 @@ const {
   getClient,
   updateClient,
   removeClient,
+  getObject,
 } = require('../../services/workspaceService');
 
 router.get("/", (req, res) => {
@@ -60,6 +61,14 @@ router.delete("/client/:id", (req, res) => {
   const success = removeClient(req.params.id);
   res.send({
     success
+  });
+});
+
+router.get("/object/:clientId/:objectId", (req, res) => {
+  const obj = getObject(req.params.clientId, req.params.objectId);
+  res.send({
+    object: obj,
+    success: true,
   });
 });
 

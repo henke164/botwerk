@@ -1,5 +1,5 @@
 <script setup>
-import NewClientSvg from "./icons/new-client.svg";
+import PlusSvg from "../../assets/img/plus.svg";
 import CrossSvg from "./icons/cross.svg";
 import CubeSvg from "./icons/cube.svg";
 import NewItemInput from "../../components/NewItemInput.vue";
@@ -78,7 +78,7 @@ export default {
         <a
           title="New modeler"
           class="icon"
-          v-html="NewClientSvg"
+          v-html="PlusSvg"
           v-on:click="editNewModeler"
         ></a>
       </div>

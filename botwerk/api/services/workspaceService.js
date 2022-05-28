@@ -151,6 +151,11 @@ function removeModeler(id) {
   };
 }
 
+function getObject(clientId, objectId) {
+  const client = currentWorkspace.clients.find(c => c.id === clientId);
+  return client.objects[objectId];
+}
+
 module.exports = {
   getModeler,
   getAllModelers,
@@ -160,5 +165,6 @@ module.exports = {
   updateClient,
   removeClient,
   getWorkspace,
-  saveWorkspace
+  saveWorkspace,
+  getObject,
 }

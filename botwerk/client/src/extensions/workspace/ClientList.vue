@@ -1,5 +1,5 @@
 <script setup>
-import NewClientSvg from "./icons/new-client.svg";
+import PlusSvg from "../../assets/img/plus.svg";
 import CrossSvg from "./icons/cross.svg";
 import ArrowRightSvg from "./icons/arrow-right.svg";
 import ArrowDownSvg from "./icons/arrow-down.svg";
@@ -77,6 +77,16 @@ export default {
         });
       }
     },
+    editObject(client, objectId) {
+      emitAppEvent("SET_MAIN_PANEL_VIEW", {
+        extensionView: "EditObjectView",
+        params: {
+          clientId: client.id,
+          objectId,
+          reload: this.reload,
+        },
+      });
+    }
   },
 };
 </script>
@@ -89,7 +99,7 @@ export default {
         <a
           title="New client"
           class="icon"
-          v-html="NewClientSvg"
+          v-html="PlusSvg"
           v-on:click="editNewClient()"
         ></a>
       </div>
@@ -110,62 +120,13 @@ export default {
         ></a>
       </a>
       <div v-if="this.expanded[client.id]">
-        <!-- Modelers -->
-        <a
-          class="client-content-row list-item"
-          v-on:click="() => toggleExpand(`${client.id}_modelers`)"
-        >
-          <span
-            class="icon"
-            v-html="
-              this.expanded[`${client.id}_modelers`]
-                ? ArrowDownSvg
-                : ArrowRightSvg
-            "
-          ></span>
-          <span class="list-item-text">modelers</span>
-          <span class="list-item-count">
-            {{ `( ${client.modelers.length} )` }}
-          </span>
-        </a>
-        <div v-if="this.expanded[`${client.id}_modelers`]">
-          <div v-for="(child, childIdx) in client.modelers" v-bind:key="childIdx">
-            <a class="client-content-child-row list-item">
-              <span class="icon" v-html="CubeSvg"></span>
-              <span class="list-item-text">{{
-                getComponentName(child)
-              }}</span>
-            </a>
-          </div>
-        </div>
-        <!-- END -->
-        <!-- Objects -->
-        <a
-          class="client-content-row list-item"
-          v-on:click="() => toggleExpand(`${client.id}_objects`)"
-        >
-          <span
-            class="icon"
-            v-html="
-              this.expanded[`${client.id}_objects`]
-                ? ArrowDownSvg
-                : ArrowRightSvg
-            "
-          ></span>
-          <span class="list-item-text">objects</span>
-          <span class="list-item-count">
-            {{ `( ${Object.keys(client.objects).length} )` }}
-          </span>
-        </a>
-        <div v-if="this.expanded[`${client.id}_objects`]">
-          <div v-for="(key, childIdx) in Object.keys(client.objects)" v-bind:key="childIdx">
-            <a class="client-content-child-row list-item">
-              <span class="icon" v-html="CubeSvg"></span>
-              <span class="list-item-text">{{
-                key
-              }}</span>
-            </a>
-          </div>
+        <div v-for="(key, childIdx) in Object.keys(client.objects)" v-bind:key="childIdx">
+          <a class="client-content-child-row list-item" v-on:click="() => editObject(client, key)">
+            <span class="icon" v-html="CubeSvg"></span>
+            <span class="list-item-text">{{
+              key
+            }}</span>
+          </a>
         </div>
         <!-- END -->
       </div>
@@ -173,7 +134,7 @@ export default {
     <NewItemInput
       v-if="showNewClientInput"
       :maxLength="20"
-      :icon="NewClientSvg"
+      :icon="PlusSvg"
       :inputError="newClientInputError"
       :onEnter="createClient"
       :onCancel="() => (showNewClientInput = false)"

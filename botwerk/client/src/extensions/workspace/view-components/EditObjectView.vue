@@ -2,84 +2,49 @@
 import CodeEditor from "simple-code-editor";
 import TabBar from "../../../components/TabBar.vue";
 import DraggableComponent from "../../../components/DraggableComponent.vue";
-import { get, post } from "../../../services/apiService";
-import { emitAppEvent } from "../../../services/appEventHandler";
+import { get } from "../../../services/apiService";
 </script>
 <script>
 export default {
   props: ["params"],
   data() {
     return {
-      modelerId: null,
-      modeler: null,
-      ruleKey: null,
+      clientId: null,
+      objectId: null,
+      objectCode: null,
     };
   },
   watch: {
     params() {
-      this.fetchModeler();
+      this.fetchObject();
     },
   },
   methods: {
-    async fetchModeler() {
-      const { success, modeler } = await get(
-        `/workspace/modeler/${this.params.modeler.id}`
+    async fetchObject() {
+      const { success, object } = await get(
+        `/workspace/object/${this.params.clientId}/${this.params.objectId}`
       );
 
       if (!success) {
         return;
       }
 
-      this.modeler = modeler;
+      this.objectCode = JSON.stringify(object, null, 2);
     },
     async handleSave() {
-      if (this.modeler.name.length === 0) {
-        return;
-      }
-
-      await post("/workspace/modeler", this.modeler);
-      emitAppEvent(
-        "LOG",
-        `Successfully updated modeller: ${this.modeler.name}!`
-      );
       this.params.reload();
     },
-    onTabSelected(index) {
-      const tab = this.getTabs()[index];
-      this.ruleKey = tab.ruleKey;
-    },
-    getTabs() {
-      return [
-        {
-          title: "Create / Update Object Rules",
-          ruleKey: "update",
-        },
-        {
-          title: "Remove Object Rules",
-          ruleKey: "remove",
-        },
-        {
-          title: "Mapper",
-          ruleKey: "map",
-        },
-      ];
-    }
   },
   mounted() {
-    this.fetchModeler().then(() => {
-      this.onTabSelected(0);
-    });
+    this.fetchObject();
   },
 };
 </script>
 
 <template>
   <div class="panel">
-    <div class="left-bar" v-if="modeler">
-      <h4>EDIT MODELER</h4>
-      <div class="input-wrapper">
-        <input type="text" v-model="modeler.name" />
-      </div>
+    <div class="left-bar" v-if="objectCode">
+      <h4>OBJECT VIEWER</h4>
       <button v-on:click="handleSave">Save changes</button>
 
       <DraggableComponent
@@ -88,11 +53,10 @@ export default {
         :max="500"
       ></DraggableComponent>
     </div>
-    <div class="right-bar" v-if="modeler">
-      <TabBar :tabs="getTabs()" :onTabSelected="onTabSelected"></TabBar>
-      <div class="editor-wrapper" v-if="ruleKey">
+    <div class="right-bar" v-if="objectCode">
+      <div class="editor-wrapper">
         <CodeEditor
-          v-model="modeler.rules[ruleKey]"
+          v-model="objectCode"
           class="botwerk-code-editor"
         ></CodeEditor>
       </div>
