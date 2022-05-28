@@ -2,6 +2,8 @@
 import CodeEditor from "simple-code-editor";
 import TabBar from "../../../components/TabBar.vue";
 import DraggableComponent from "../../../components/DraggableComponent.vue";
+import ModelerSvg from "../icons/modeler.svg";
+
 import { get, post } from "../../../services/apiService";
 import { emitAppEvent } from "../../../services/appEventHandler";
 </script>
@@ -12,15 +14,19 @@ export default {
     return {
       client: null,
       clientId: null,
+      components: null,
+      workspace: null,
+      isDirty: false,
+      componentFilter: "",
     };
   },
   watch: {
     params() {
-      this.fetchClient();
+      this.initialize();
     },
   },
   methods: {
-    async fetchClient() {
+    async initialize() {
       const { success, client } = await get(
         `/workspace/client/${this.params.client.id}`
       );
@@ -30,19 +36,41 @@ export default {
       }
 
       this.client = client;
+      this.components = [
+        ...this.params.workspace.modelers.map(m => ({
+          id: m.id,
+          name: m.name,
+          varName: 'modelers',
+          selected: this.client.modelers.includes(m.id)
+        })),
+        ...this.params.workspace.actions.map(m => ({
+          id: m.id,
+          name: m.name,
+          varName: 'actions',
+          selected: this.client.actions.includes(m.id)
+        })),
+      ];
+    },
+    onComponentChange(e, component) {
+      if (e.target.checked) {
+        this.client[component.varName].push(component.id);
+      } else {
+        const index = this.client[component.varName].map(c => c.id === component.id);
+        this.client[component.varName].splice(index, 1);
+      }
     },
     async handleSave() {
       if (this.client.name.length === 0) {
         return;
       }
 
-      await post("/workspace/modeler", this.client);
+      await post("/workspace/client", this.client);
       emitAppEvent("LOG", `Successfully updated client: ${this.client.name}!`);
       this.params.reload();
     },
   },
   mounted() {
-    this.fetchClient();
+    this.initialize();
   },
 };
 </script>
@@ -64,6 +92,27 @@ export default {
     </div>
     <div class="left-bar" v-if="client">
       <div class="header">Components</div>
+      <div v-if="components">
+        <div class="component-filter-wrapper">
+          <input type="text" placeholder="Filter" v-model="componentFilter" />
+        </div>
+        <label
+          class="component"
+          v-for="component in components.filter(c => 
+            c.name.toLowerCase().includes(componentFilter.toLowerCase()))"
+          v-bind:key="component.id">
+          <input
+            type="checkbox"
+            v-model="component.selected"
+            @change="e => onComponentChange(e, component)"
+          />
+          <span
+            class="icon"
+            v-html="ModelerSvg"
+          ></span>
+          <span>{{component.name}}</span>
+        </label>
+      </div>
       <DraggableComponent
         :side="'right'"
         :min="150"
@@ -81,12 +130,36 @@ input[type="text"] {
   border: 1px solid #595c76!important;
 }
 
+.component {
+  display: block;
+  line-height: 20px;
+  margin-bottom: 5px;
+}
+
+.component input {
+  vertical-align: middle;;
+}
+
+.component span {
+  margin-right: 5px
+}
+
+.component:hover {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
 .input-wrapper {
   display: flex;
 }
 
+.component-filter-wrapper {
+  display: flex;
+  margin-bottom: 10px;
+}
+
 .header {
-  margin-top: 20px;
+  margin: 20px 0;
 }
 
 .panel {
@@ -100,6 +173,7 @@ input[type="text"] {
   position: relative;
   min-width: 250px;
   flex-direction: column;
+  overflow-y: scroll;
 }
 
 .right-bar {
@@ -111,36 +185,5 @@ input[type="text"] {
 .editor-wrapper {
   display: flex;
   flex: 1;
-}
-</style>
-<style>
-.botwerk-code-editor textarea {
-  font-size: 12px !important;
-}
-
-.botwerk-code-editor .hljs {
-  background: #222336 !important;
-  font-size: 12px !important;
-}
-
-.botwerk-code-editor .header {
-  display: none;
-}
-
-.botwerk-code-editor .hljs-comment {
-  color: #6a9955;
-}
-
-.botwerk-code-editor.code_editor {
-  height: auto;
-  flex: 1;
-  background: #222336 !important;
-  overflow-y: scroll !important;
-  border-radius: 0px !important;
-}
-
-.botwerk-code-editor .code_area {
-  height: 100%;
-  overflow: inherit !important;
 }
 </style>

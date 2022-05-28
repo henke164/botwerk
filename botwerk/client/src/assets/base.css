@@ -80,13 +80,14 @@ label {
   background-size: 100%;
   width: 20px;
   height: 20px;
-  filter: opacity(1) invert(1) saturate(0) hue-rotate(150deg) contrast(3)
-    brightness(0.7);
   vertical-align: middle;
 }
 
+.icon svg {
+  stroke: #aaa;
+  fill: #aaa;
+}
+
 a.icon:hover {
-  filter: opacity(1) invert(1) saturate(0) hue-rotate(150deg) contrast(3)
-    brightness(1);
   cursor: pointer;
 }

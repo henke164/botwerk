@@ -122,6 +122,7 @@ input[type="text"] {
   position: relative;
   min-width: 250px;
   flex-direction: column;
+  overflow-y: scroll;
 }
 
 .right-bar {

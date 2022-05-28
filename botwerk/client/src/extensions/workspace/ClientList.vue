@@ -12,7 +12,12 @@ import { emitAppEvent } from "../../services/appEventHandler";
 
 <script>
 export default {
-  props: ["clients", "reload", "selectedItem", "selectItem"],
+  props: [
+    "workspace",
+    "reload",
+    "selectedItem",
+    "selectItem"
+  ],
   data() {
     return {
       showNewClientInput: false,
@@ -21,6 +26,12 @@ export default {
     };
   },
   methods: {
+    getComponentName(id) {
+      return [
+        ...this.workspace.modelers,
+        ...this.workspace.actions,
+      ].find(m => m.id === id).name;
+    },
     editNewClient() {
       this.newClientInputError = null;
       this.showNewClientInput = true;
@@ -49,6 +60,13 @@ export default {
         ["objects", client.objects],
       ];
     },
+    toggleExpand(key) {
+      if (this.expanded[key]) {
+        delete this.expanded[key];
+      } else {
+        this.expanded[key] = true;
+      }
+    },
     selectClient(client) {
       if (this.expanded[client.id] && this.selectedItem === client.id) {
         this.selectItem(null);
@@ -60,6 +78,7 @@ export default {
           extensionView: "EditClientView",
           params: {
             client,
+            workspace: this.workspace,
             reload: this.reload,
           },
         });
@@ -82,7 +101,7 @@ export default {
         ></a>
       </div>
     </div>
-    <div v-for="client in clients" v-bind:key="client">
+    <div v-for="client in workspace.clients" v-bind:key="client">
       <a
         class="list-item"
         :class="this.selectedItem === client.id ? 'selected' : ''"
@@ -98,8 +117,11 @@ export default {
         ></a>
       </a>
       <div v-if="this.expanded[client.id]">
-        <div v-for="item in getClientLists(client)" v-bind:key="item.id">
-          <a class="client-content-row list-item">
+        <div v-for="item in getClientLists(client)" v-bind:key="item[0]">
+          <a
+            class="client-content-row list-item"
+            v-on:click="() => toggleExpand(`${client.id}_${item[0]}`)"
+          >
             <span
               class="icon"
               v-html="
@@ -113,13 +135,15 @@ export default {
               {{ `( ${item[1] ? item[1].length : 0} )` }}
             </span>
           </a>
-          <div v-for="(child, childIdx) in item[1]" v-bind:key="childIdx">
-            <a class="client-content-child-row list-item">
-              <span class="icon" v-html="CubeSvg"></span>
-              <span class="list-item-text" v-on:click="editFile(child.id)">{{
-                child.name
-              }}</span>
-            </a>
+          <div v-if="this.expanded[`${client.id}_${item[0]}`]">
+            <div v-for="(child, childIdx) in item[1]" v-bind:key="childIdx">
+              <a class="client-content-child-row list-item">
+                <span class="icon" v-html="CubeSvg"></span>
+                <span class="list-item-text">{{
+                  getComponentName(child)
+                }}</span>
+              </a>
+            </div>
           </div>
         </div>
       </div>

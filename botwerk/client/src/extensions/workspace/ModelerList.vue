@@ -9,7 +9,7 @@ import { emitAppEvent } from "../../services/appEventHandler";
 
 <script>
 export default {
-  props: ["modelers", "reload", "selectedItem", "selectItem"],
+  props: ["workspace", "reload", "selectedItem", "selectItem"],
   data() {
     return {
       showNewModelerInput: false,
@@ -83,7 +83,7 @@ export default {
         ></a>
       </div>
     </div>
-    <div v-for="(modeler, index) in modelers" v-bind:key="index">
+    <div v-for="(modeler, index) in workspace.modelers" v-bind:key="index">
       <a
         class="list-item"
         :class="this.selectedItem === modeler.id ? 'selected' : ''"

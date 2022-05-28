@@ -40,13 +40,13 @@ export default {
     <h4>WORKSPACE</h4>
     <ClientList
       :reload="reload"
-      :clients="this.workspace.clients"
+      :workspace="this.workspace"
       :selectedItem="selectedItem"
       :selectItem="handleItemSelected"
     />
     <ModelerList
       :reload="reload"
-      :modelers="this.workspace.modelers"
+      :workspace="this.workspace"
       :selectedItem="selectedItem"
       :selectItem="handleItemSelected"
     />

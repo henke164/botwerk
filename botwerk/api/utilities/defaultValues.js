@@ -53,10 +53,7 @@ const defaultClient = {
   id: uuidv4(),
   name: 'Default',
   actions: [],
-  modelers: [{
-    id: defaultModeler.id,
-    name: defaultModeler.name,
-  }]
+  modelers: [defaultModeler.id]
 };
 
 const defaultWorkspace = {
