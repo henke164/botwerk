@@ -11,29 +11,47 @@ export default {
       this.mouseDown = true;
       ev.preventDefault();
     },
-  },
-  mounted() {
-    document.addEventListener("mouseleave", () => {
+    onMouseUp() {
       this.mouseDown = false;
-    });
+    },
+    loadStoredSize() {
+      this.$nextTick(() => {
+        const parent = this.$refs.dragResize.parentElement;
+        const id = parent.getAttribute('id');
+        if (!id) {
+          return;
+        }
 
-    document.addEventListener("mouseup", () => {
-      this.mouseDown = false;
-    });
+        const width = localStorage.getItem(`draggable_width_${id}`);
+        if (width) {
+          parent.style.minWidth = width + "px";
+          parent.style.maxWidth = width + "px";
+        }
 
-    document.addEventListener("mousemove", (ev) => {
+        const height = localStorage.getItem(`draggable_height_${id}`);
+        if (height) {
+          parent.style.minHeight = height + "px";
+          parent.style.maxHeight = height + "px";
+        }
+      });
+    },
+    onMouseMove(ev) {
       if (!this.mouseDown) {
         return;
       }
       const parent = this.$refs.dragResize.parentElement;
+      const id = parent.getAttribute('id');
       if (this.side === "right") {
         const halfBarWidth = this.$refs.dragResize.clientWidth / 2;
-        const width = ev.clientX - parent.offsetLeft + halfBarWidth - 30;
+        const width = ev.clientX - parent.offsetLeft + halfBarWidth + window.scrollX - 30;
         if (width < this.min || width > this.max) {
           return;
         }
         parent.style.minWidth = width + "px";
         parent.style.maxWidth = width + "px";
+        if (id) {
+          localStorage.setItem(`draggable_width_${id}`, width)
+        }
       } else if (this.side === "top") {
         const halfBarHeight = this.$refs.dragResize.clientHeight / 2;
         const height = document.body.clientHeight - ev.clientY - halfBarHeight;
@@ -42,8 +60,22 @@ export default {
         }
         parent.style.minHeight = height + "px";
         parent.style.maxHeight = height + "px";
+        if (id) {
+          localStorage.setItem(`draggable_height_${id}`, height)
+        }
       }
-    });
+    }
+  },
+  mounted() {
+    document.addEventListener("mouseleave", this.onMouseUp);
+    document.addEventListener("mouseup", this.onMouseUp);
+    document.addEventListener("mousemove", this.onMouseMove);
+    this.loadStoredSize();
+  },
+  beforeUnmount() {
+    document.removeEventListener("mouseleave", this.onMouseUp);
+    document.removeEventListener("mouseup", this.onMouseUp);
+    document.removeEventListener("mousemove", this.onMouseMove);
   }
 };
 </script>

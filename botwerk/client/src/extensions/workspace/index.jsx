@@ -1,7 +1,7 @@
 import icon from "./icons/workspace.svg";
-import EditModelerView from "./view-components/EditModelerView.vue";
-import EditClientView from "./view-components/EditClientView.vue";
-import EditObjectView from "./view-components/EditObjectView.vue";
+import EditModelerView from "./components/EditModelerView.vue";
+import EditClientView from "./components/EditClientView.vue";
+import ObjectViewer from "./components/ObjectViewer.vue";
 import Workspace from "./Workspace.vue";
 
 export default {
@@ -10,6 +10,6 @@ export default {
   views: {
     EditModelerView,
     EditClientView,
-    EditObjectView,
+    ObjectViewer,
   },
 };

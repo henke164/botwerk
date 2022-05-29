@@ -1,13 +1,13 @@
 <script setup>
-import PlusSvg from "../../assets/img/plus.svg";
-import CrossSvg from "./icons/cross.svg";
-import ArrowRightSvg from "./icons/arrow-right.svg";
-import ArrowDownSvg from "./icons/arrow-down.svg";
-import CubeSvg from "./icons/cube.svg";
+import PlusSvg from "../../../assets/img/plus.svg";
+import CrossSvg from "../icons/cross.svg";
+import ArrowRightSvg from "../icons/arrow-right.svg";
+import ArrowDownSvg from "../icons/arrow-down.svg";
+import CubeSvg from "../icons/cube.svg";
 
-import NewItemInput from "../../components/NewItemInput.vue";
-import { post, del } from "../../services/apiService";
-import { emitAppEvent } from "../../services/appEventHandler";
+import NewItemInput from "../../../components/NewItemInput.vue";
+import { post, del } from "../../../services/apiService";
+import { emitAppEvent } from "../../../services/appEventHandler";
 </script>
 
 <script>
@@ -75,7 +75,7 @@ export default {
     editObject(client, objectId) {
       this.selectItem(`${client.id}_object_${objectId}`);
       emitAppEvent("SET_MAIN_PANEL_VIEW", {
-        extensionView: "EditObjectView",
+        extensionView: "ObjectViewer",
         params: {
           clientId: client.id,
           objectId,

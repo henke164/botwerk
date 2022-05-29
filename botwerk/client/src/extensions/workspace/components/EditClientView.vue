@@ -179,6 +179,7 @@ input[type="text"] {
 
 .right-bar {
   display: flex;
+  width: 150px;
   flex: 1;
   flex-direction: column;
 }

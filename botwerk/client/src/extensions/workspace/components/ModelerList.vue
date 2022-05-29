@@ -1,10 +1,10 @@
 <script setup>
-import PlusSvg from "../../assets/img/plus.svg";
-import CrossSvg from "./icons/cross.svg";
-import CubeSvg from "./icons/cube.svg";
-import NewItemInput from "../../components/NewItemInput.vue";
-import { post, del } from "../../services/apiService.js";
-import { emitAppEvent } from "../../services/appEventHandler";
+import PlusSvg from "../../../assets/img/plus.svg";
+import CrossSvg from "../icons/cross.svg";
+import CubeSvg from "../icons/cube.svg";
+import NewItemInput from "../../../components/NewItemInput.vue";
+import { post, del } from "../../../services/apiService.js";
+import { emitAppEvent } from "../../../services/appEventHandler";
 </script>
 
 <script>

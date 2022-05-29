@@ -64,7 +64,7 @@ export default {
 </script>
 
 <template>
-  <div class="console">
+  <div id="console">
     <DraggableComponent
       class="drag-line"
       :side="'top'"
@@ -109,7 +109,7 @@ export default {
 </template>
 
 <style scoped>
-.console {
+#console {
   display: flex;
   flex-direction: column;
   color: white;

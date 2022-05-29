@@ -14,16 +14,6 @@ function onSocketPacketReceived(socketIndex, packet) {
     return type === "USER_DATA";
 }
 `,
-    remove: 
-`// Define rules that describes if the packet removes an object. 
-function onSocketPacketReceived(socketIndex, packet) {
-    if (socketIndex !== 0) {
-        return false;
-    }
-    const { type, data } = JSON.parse(packet);
-    return type === "USER_REMOVED";
-}
-`,
     map: 
 `
 // Objects must always contain "_id" property

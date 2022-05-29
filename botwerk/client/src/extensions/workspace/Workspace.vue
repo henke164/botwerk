@@ -1,6 +1,6 @@
 <script setup>
-import ClientList from "./ClientList.vue";
-import ModelerList from "./ModelerList.vue";
+import ClientList from "./components/ClientList.vue";
+import ModelerList from "./components/ModelerList.vue";
 import { get } from "../../services/apiService";
 import {
   addAppEventListener,

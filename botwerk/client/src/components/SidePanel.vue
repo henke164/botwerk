@@ -9,7 +9,7 @@ export default {
 </script>
 
 <template>
-  <div class="side-panel">
+  <div id="side-panel">
     <component v-bind:is="component"></component>
     <DraggableComponent
       :side="'right'"
@@ -20,7 +20,7 @@ export default {
 </template>
 
 <style scoped>
-.side-panel {
+#side-panel {
   min-width: 320px;
   height: 100vh;
   background: #222336;

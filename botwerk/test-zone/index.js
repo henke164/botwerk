@@ -20,7 +20,9 @@ app.post('/request-package', (req, res) => {
   }
 });
 
-app.listen(port);
+app.listen(port, () => {
+  console.log(`Test-zone started on port: ${port}`);
+});
 
 const wss = new WebSocketServer({ port: 3003 });
 wss.on('connection', function connection(ws) {

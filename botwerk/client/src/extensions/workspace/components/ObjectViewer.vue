@@ -2,84 +2,72 @@
 import CodeEditor from "simple-code-editor";
 import TabBar from "../../../components/TabBar.vue";
 import DraggableComponent from "../../../components/DraggableComponent.vue";
-import { get, post } from "../../../services/apiService";
-import { emitAppEvent } from "../../../services/appEventHandler";
+import { get } from "../../../services/apiService";
 </script>
 <script>
 export default {
   props: ["params"],
   data() {
     return {
-      modelerId: null,
-      modeler: null,
-      ruleKey: null,
+      tabIndex: 0,
+      clientId: null,
+      objectId: null,
+      appearanceHTML: null,
+      objectCode: null,
     };
   },
   watch: {
     params() {
-      this.fetchModeler();
+      this.fetchObject();
     },
   },
   methods: {
-    async fetchModeler() {
-      const { success, modeler } = await get(
-        `/workspace/modeler/${this.params.modeler.id}`
+    async fetchObject() {
+      const objRes = await get(
+        `/workspace/object/${this.params.clientId}/${this.params.objectId}`
       );
 
-      if (!success) {
+      if (!objRes.success) {
         return;
       }
 
-      this.modeler = modeler;
-    },
-    async handleSave() {
-      if (this.modeler.name.length === 0) {
+      const { object } = objRes;
+      this.objectCode = JSON.stringify(object, null, 2);
+
+      const modelerRes = await get(`/workspace/modeler/${object._modeler}`);
+
+      if (!modelerRes.success) {
         return;
       }
-
-      await post("/workspace/modeler", this.modeler);
-      emitAppEvent(
-        "LOG",
-        `Successfully updated modeller: ${this.modeler.name}!`
-      );
-      this.params.reload();
-    },
-    onTabSelected(index) {
-      const tab = this.getTabs()[index];
-      this.ruleKey = tab.ruleKey;
+      this.appearanceHTML = modelerRes.modeler.appearanceHTML;
     },
     getTabs() {
       return [
         {
-          title: "Create / Update Object Rules",
-          ruleKey: "update",
+          title: "Visual",
         },
         {
-          title: "Remove Object Rules",
-          ruleKey: "remove",
-        },
-        {
-          title: "Mapper",
-          ruleKey: "map",
+          title: "Code",
         },
       ];
-    }
+    },
+    onTabSelected(tab) {
+      this.tabIndex = tab;
+    },
+    async handleSave() {
+      this.params.reload();
+    },
   },
   mounted() {
-    this.fetchModeler().then(() => {
-      this.onTabSelected(0);
-    });
+    this.fetchObject();
   },
 };
 </script>
 
 <template>
   <div class="panel">
-    <div class="left-bar" v-if="modeler">
-      <h4>EDIT MODELER</h4>
-      <div class="input-wrapper">
-        <input type="text" v-model="modeler.name" />
-      </div>
+    <div id="object-viewer" class="left-bar" v-if="objectCode">
+      <h4>OBJECT VIEWER</h4>
       <button v-on:click="handleSave">Save changes</button>
 
       <DraggableComponent
@@ -88,11 +76,14 @@ export default {
         :max="500"
       ></DraggableComponent>
     </div>
-    <div class="right-bar" v-if="modeler">
+    <div class="right-bar flex" v-if="objectCode">
       <TabBar :tabs="getTabs()" :onTabSelected="onTabSelected"></TabBar>
-      <div class="editor-wrapper" v-if="ruleKey">
+      <div class="html-wrapper flex" v-if="tabIndex === 0">
+        <div v-html="appearanceHTML"></div>
+      </div>
+      <div class="code-wrapper flex" v-if="tabIndex === 1">
         <CodeEditor
-          v-model="modeler.rules[ruleKey]"
+          v-model="objectCode"
           class="botwerk-code-editor"
         ></CodeEditor>
       </div>
@@ -126,14 +117,24 @@ input[type="text"] {
 }
 
 .right-bar {
-  display: flex;
-  flex: 1;
+  width: 150px;
   flex-direction: column;
 }
 
-.editor-wrapper {
+.flex {
   display: flex;
   flex: 1;
+}
+
+.code-wrapper {
+  max-height: calc(100% - 50px);
+  overflow-y: scroll;
+}
+
+.html-wrapper {
+  position: relative;
+  max-height: calc(100% - 50px);
+  overflow-y: scroll;
 }
 </style>
 <style>
@@ -144,10 +145,6 @@ input[type="text"] {
 .botwerk-code-editor .hljs {
   background: #222336 !important;
   font-size: 12px !important;
-}
-
-.botwerk-code-editor .header {
-  display: none;
 }
 
 .botwerk-code-editor .hljs-comment {
