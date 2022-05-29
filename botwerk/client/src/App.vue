@@ -3,6 +3,7 @@ import IconPanel from "./components/IconPanel.vue";
 import SidePanel from "./components/SidePanel.vue";
 import MainPanel from "./components/MainPanel.vue";
 import { extensions } from "./extensions/extensions.jsx";
+import { connectWebsocket, defaultHost } from "./services/websocketService";
 </script>
 
 <script>
@@ -20,6 +21,7 @@ export default {
     },
   },
   mounted() {
+    connectWebsocket(defaultHost);
     const storedMenuIndex = localStorage.getItem("selectedExtensionIndex");
     if (storedMenuIndex) {
       this.selectedExtensionIndex = parseInt(storedMenuIndex);

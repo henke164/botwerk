@@ -1,34 +1,25 @@
 <script>
-import { emitAppEvent } from "../../services/appEventHandler";
+import {
+  connectWebsocket,
+  disconnectWebsocket,
+  defaultHost,
+  isConnected,
+} from "../../services/websocketService";
 
 export default {
   data() {
     return {
-      wsHost: "ws://localhost:3001/websockets?botwerk",
-      isConnected: this.$root.botwerkWsConnection !== undefined,
+      wsHost: defaultHost,
+      isConnected: isConnected(),
     };
   },
   methods: {
     connectWs() {
-      const connection = new WebSocket(this.wsHost);
-      connection.onmessage = (pkg) => {
-        try {
-          const { type, socketId, clientId, content } = JSON.parse(pkg.data.toString());
-          emitAppEvent(type, content, { 
-            socketId,
-            clientId,
-          });
-        } catch (e) {
-          emitAppEvent("LOG", e.message);
-        }
-      };
-      this.$root.botwerkWsConnection = connection;
       this.isConnected = true;
+      connectWebsocket(this.wsHost);
     },
     disconnectWs() {
-      console.log("Close");
-      this.$root.botwerkWsConnection.close();
-      this.$root.botwerkWsConnection = undefined;
+      disconnectWebsocket(this.wsHost);
       this.isConnected = false;
     },
   },
