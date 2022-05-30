@@ -3,6 +3,38 @@ const { v4: uuidv4 } = require('uuid');
 const defaultModeler = {
   id: uuidv4(),
   name: "Default Modeler",
+  appearanceHTML: `<div class="wrapper">
+    <div class="field">
+        Id: {_id}
+    </div>
+
+    <div class="field">
+        Name: {name}
+    </div>
+
+    <div class="field">
+        Level: {level}
+    </div>
+  </div>
+  <style>
+    .wrapper {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        background: #444;
+    }
+    
+    .field {
+        font-size: 12px;
+        color: white;
+        background: #999;
+        margin: 10px;
+        border: 1px solid #333;
+        padding: 10px;
+    }
+  </style>`,
   rules: {
     update: 
 `// Define rules that describes if the packet creates or updates an object. 
@@ -10,29 +42,18 @@ function onSocketPacketReceived(socketIndex, packet) {
     if (socketIndex !== 0) {
         return false;
     }
-    const { type, data } = JSON.parse(packet);
-    return type === "USER_DATA";
+
+    return packet.t === "USER_DATA";
 }
 `,
     map: 
-`
+`// Define how the object will look like.
 // Objects must always contain "_id" property
-
-// Describe how to get existing object. the variable "objects" is a Map with all objects
-function getExisting(packet) {
-    const { data } = JSON.parse(packet);
-    return objects[data.p.c.id];
-}
-
-// Define how the object will look like.
-function map(packet, existing) {
-    const { data } = JSON.parse(packet);
+function mapObject(packet) {
     return {
-        _id: data.p.c.id,
-        name: data.p.c.n,
-        friends: [
-            ...data.p.fds
-        ],
+        _id: packet.d.i,
+        name: packet.d.n,
+        level: packet.d.l
     };
 }
 `,
@@ -43,7 +64,8 @@ const defaultClient = {
   id: uuidv4(),
   name: 'Default',
   actions: [],
-  modelers: [defaultModeler.id]
+  modelers: [defaultModeler.id],
+  objects: {},
 };
 
 const defaultWorkspace = {

@@ -127,6 +127,12 @@ export default {
       </a>
       <div v-if="this.expanded[client.id]">
         <div
+          v-if="Object.keys(client.objects).length === 0"
+          class="no-objects-message"
+        >
+          No objects
+        </div>
+        <div
           v-for="(key, childIdx) in Object.keys(client.objects)"
           v-bind:key="childIdx"
         >
@@ -221,6 +227,11 @@ a {
 .tools {
   flex: 1;
   text-align: right;
+}
+
+.no-objects-message {
+  margin-left: 20px;
+  font-style: italic;
 }
 
 .list-item-text {

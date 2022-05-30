@@ -23,23 +23,16 @@ export default {
   },
   methods: {
     async fetchObject() {
-      const objRes = await get(
-        `/workspace/object/${this.params.clientId}/${this.params.objectId}`
+      const res = await get(
+        `/workspace/object/${this.params.clientId}/${this.params.objectId}`,
       );
 
-      if (!objRes.success) {
+      if (!res.success) {
         return;
       }
 
-      const { object } = objRes;
-      this.objectCode = JSON.stringify(object, null, 2);
-
-      const modelerRes = await get(`/workspace/modeler/${object._modeler}`);
-
-      if (!modelerRes.success) {
-        return;
-      }
-      this.appearanceHTML = modelerRes.modeler.appearanceHTML;
+      this.objectCode = JSON.stringify(res.object, null, 2);
+      this.appearanceHTML = res.appearanceHTML;
     },
     getTabs() {
       return [
@@ -54,9 +47,6 @@ export default {
     onTabSelected(tab) {
       this.tabIndex = tab;
     },
-    async handleSave() {
-      this.params.reload();
-    },
   },
   mounted() {
     this.fetchObject();
@@ -68,8 +58,6 @@ export default {
   <div class="panel">
     <div id="object-viewer" class="left-bar" v-if="objectCode">
       <h4>OBJECT VIEWER</h4>
-      <button v-on:click="handleSave">Save changes</button>
-
       <DraggableComponent
         :side="'right'"
         :min="150"

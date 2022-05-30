@@ -2,7 +2,7 @@ const { v4: uuidv4 } = require('uuid');
 const fs = require('fs');
 const { defaultWorkspace, defaultModeler } = require('../utilities/defaultValues');
 
-const cachePath = __dirname + "/workspace-cache.json";
+const cachePath = __dirname + "/../workspace-cache.json";
 let currentWorkspace;
 loadCachedWorkspace(cachePath);
 
@@ -83,15 +83,10 @@ function removeClient(id) {
 function getModeler(id) {
   const modeler = currentWorkspace.modelers.find(m => m.id === id);
   if (!modeler) {
-    return {
-      success: false,
-    };
+    null
   }
 
-  return {
-    success: true,
-    modeler
-  };
+  return modeler;
 }
 
 function getAllModelers() {
@@ -152,7 +147,8 @@ function removeModeler(id) {
 
 function getObject(clientId, objectId) {
   const client = currentWorkspace.clients.find(c => c.id === clientId);
-  return client.objects[objectId];
+  const object = client.objects[objectId];
+  return object;
 }
 
 function deleteObject(clientId, objectId) {

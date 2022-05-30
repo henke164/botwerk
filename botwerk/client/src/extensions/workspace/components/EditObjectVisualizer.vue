@@ -1,6 +1,4 @@
 <script setup>
-import DragSvg from "../icons/drag.svg";
-import CrossSvg from "../icons/cross.svg";
 import CodeEditor from "simple-code-editor";
 import DraggableComponent from "../../../components/DraggableComponent.vue";
 </script>
@@ -9,11 +7,11 @@ export default {
   props: ["appearanceHTML", "onChanged"],
   data() {
     return {
-      html: '',
+      html: "",
     };
   },
   mounted() {
-    this.html = this.appearanceHTML || '';
+    this.html = this.appearanceHTML || "";
   },
   methods: {
     onHtmlChanged() {
@@ -30,7 +28,7 @@ export default {
       <DraggableComponent
         :side="'right'"
         :min="150"
-        :max="500"
+        :max="800"
       ></DraggableComponent>
     </div>
     <div class="code-editor">
@@ -63,7 +61,6 @@ export default {
   min-width: 150px;
   position: relative;
   flex: 1;
-  background: white;
   color: black;
   overflow-y: scroll;
 }

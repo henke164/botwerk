@@ -14,6 +14,8 @@ const {
   deleteObject,
 } = require('../../services/workspaceService');
 
+const { replaceAppearanceValues } = require('../../utilities/visualizer');
+
 router.get("/", (req, res) => {
   const workspace = getWorkspace();
   res.send({
@@ -24,7 +26,10 @@ router.get("/", (req, res) => {
 
 router.get("/modeler/:id", (req, res) => {
   const modeler = getModeler(req.params.id);
-  res.send(modeler);
+  res.send({
+    success: true,
+    modeler
+  });
 });
 
 router.get("/modeler", (req, res) => {
@@ -66,9 +71,20 @@ router.delete("/client/:id", (req, res) => {
 });
 
 router.get("/object/:clientId/:objectId", (req, res) => {
-  const obj = getObject(req.params.clientId, req.params.objectId);
+  const object = getObject(req.params.clientId, req.params.objectId);
+  const modeler = getModeler(object._modeler);
+  const appearanceHTML = replaceAppearanceValues(modeler.appearanceHTML, object);
+
+  const clone = JSON.parse(JSON.stringify(object));
+  clone._modeler = modeler.name;
+
   res.send({
-    object: obj,
+    object: {
+      _id: object._id,
+      _modeler: clone._modeler,
+      ...clone
+    },
+    appearanceHTML,
     success: true,
   });
 });

@@ -40,28 +40,43 @@ export default {
         return;
       }
       const parent = this.$refs.dragResize.parentElement;
-      const id = parent.getAttribute('id');
+      const style = parent.currentStyle || window.getComputedStyle(parent);
+      const id = parent.getAttribute("id");
       if (this.side === "right") {
         const halfBarWidth = this.$refs.dragResize.clientWidth / 2;
-        const width = ev.clientX - parent.offsetLeft + halfBarWidth + window.scrollX - 30;
+        const width =
+          ev.clientX -
+          parent.offsetLeft +
+          halfBarWidth +
+          window.scrollX -
+          parseInt(style.paddingLeft) -
+          parseInt(style.paddingRight);
         if (width < this.min || width > this.max) {
           return;
         }
+
         parent.style.minWidth = width + "px";
         parent.style.maxWidth = width + "px";
         if (id) {
-          localStorage.setItem(`draggable_width_${id}`, width)
+          localStorage.setItem(`draggable_width_${id}`, width);
         }
       } else if (this.side === "top") {
         const halfBarHeight = this.$refs.dragResize.clientHeight / 2;
-        const height = document.body.clientHeight - ev.clientY - halfBarHeight;
+        const height =
+          document.body.clientHeight -
+          ev.clientY -
+          halfBarHeight +
+          window.scrollY -
+          parseInt(style.paddingTop) -
+          parseInt(style.paddingBottom);
+
         if (height < this.min || height > this.max) {
           return;
         }
         parent.style.minHeight = height + "px";
         parent.style.maxHeight = height + "px";
         if (id) {
-          localStorage.setItem(`draggable_height_${id}`, height)
+          localStorage.setItem(`draggable_height_${id}`, height);
         }
       }
     }
@@ -98,13 +113,13 @@ export default {
 }
 
 .drag-resize:hover {
-  box-shadow: 1px 1px 1px #eee;
+  box-shadow: 0px 2px 4px #eee;
 }
 
 .drag-resize.left {
   top: 0;
   left: 0;
-  width: 1px;
+  width: 2px;
   height: 100%;
   cursor: col-resize;
 }
@@ -112,7 +127,7 @@ export default {
 .drag-resize.right {
   top: 0;
   right: 0;
-  width: 1px;
+  width: 2px;
   height: 100%;
   cursor: col-resize;
 }
@@ -120,7 +135,7 @@ export default {
 .drag-resize.top {
   top: 0;
   left: 0;
-  height: 1px;
+  height: 2px;
   width: 100%;
   cursor: row-resize;
 }
@@ -128,7 +143,7 @@ export default {
 .drag-resize.bottom {
   bottom: 0;
   left: 0;
-  height: 1px;
+  height: 2px;
   width: 100%;
   cursor: row-resize;
 }

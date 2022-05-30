@@ -37,6 +37,15 @@
     <p>
       4. A package should now be found in the "Websocket 1" output in Botwerk with the type "USER_DATA",
       and the provided info.
+      <button onclick="completeIntro()">Next</button>
+    </p>
+  </div>
+  
+  <div id="step5" class="hidden">
+    <p>
+      Request packet from server.
+      <textarea id="packet"></textarea>
+      <button onclick="runRequestPacketFromInput()">Next</button>
     </p>
   </div>
 
@@ -46,6 +55,8 @@
     var step2 = document.getElementById('step2');
     var step3 = document.getElementById('step3');
     var step4 = document.getElementById('step4');
+    var step5 = document.getElementById('step5');
+    var packet = document.getElementById('packet');
 
     function waitForScriptInject() {
       return new Promise(resolve => {
@@ -58,6 +69,11 @@
       });
     }
 
+    function completeIntro() {
+      step5.classList.add("hidden");
+      step4.classList.remove("hidden");
+    }
+
     function connect() {
       var socket = new WebSocket("ws://localhost:3003");
       step2.classList.add("hidden");
@@ -67,20 +83,28 @@
     async function getUserFromSockets() {
       step3.classList.add("hidden");
       step4.classList.remove("hidden");
+      requestPackage(JSON.stringify({
+        t: "USER_DATA", // Type
+        d: { // Data
+          i: document.getElementById('playerId').value, // Id
+          l: document.getElementById('playerLevel').value, // Level
+          n: document.getElementById('playerName').value // Name
+        }
+      }));
+    }
 
+    function runRequestPacketFromInput() {
+      const p = packet.value;
+      requestPackage(JSON.parse(p));
+    }
+    
+    async function requestPackage(strObj) {
       const res = await fetch('/request-package', {
         method: 'POST',
         headers: {
           'content-type': 'application/json'
         },
-        body: JSON.stringify({
-          t: "USER_DATA", // Type
-          d: { // Data
-            i: document.getElementById('playerId').value, // Id
-            l: document.getElementById('playerLevel').value, // Level
-            n: document.getElementById('playerName').value // Name
-          }
-        })
+        body: strObj,
       });
 
       if (!res.status) {
