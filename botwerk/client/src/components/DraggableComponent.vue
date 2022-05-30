@@ -113,7 +113,7 @@ export default {
 }
 
 .drag-resize:hover {
-  box-shadow: 0px 2px 4px #eee;
+  box-shadow: 0px 4px 4px #81c9e4;
 }
 
 .drag-resize.left {

@@ -2,7 +2,7 @@ const { v4: uuidv4 } = require('uuid');
 
 const defaultModeler = {
   id: uuidv4(),
-  name: "Default Modeler",
+  name: "New Modeler",
   appearanceHTML: `<div class="wrapper">
     <div class="field">
         Id: {_id}
@@ -58,7 +58,14 @@ function mapObject(packet) {
 }
 `,
   }
-}
+};
+
+const defaultAction = {
+  id: uuidv4(),
+  name: "New Action",
+  statement: "",
+  code: "",
+};
 
 const defaultClient = {
   id: uuidv4(),
@@ -79,4 +86,5 @@ module.exports = {
   defaultWorkspace,
   defaultClient,
   defaultModeler,
+  defaultAction,
 }

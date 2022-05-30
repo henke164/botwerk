@@ -12,37 +12,38 @@ export default {
   props: ["params"],
   data() {
     return {
-      modeler: null,
+      action: null,
       ruleKey: null,
       tabIndex: 0,
     };
   },
   watch: {
     params() {
-      this.fetchModeler();
+      this.fetchAction();
     },
   },
   methods: {
-    async fetchModeler() {
-      const { success, modeler } = await get(
-        `/workspace/modeler/${this.params.modeler.id}`
+    async fetchAction() {
+      const { success, action } = await get(
+        `/workspace/action/${this.params.action.id}`
       );
 
       if (!success) {
         return;
       }
 
-      this.modeler = modeler;
+      this.action = action;
+      console.log(this.action);
     },
     async handleSave() {
-      if (this.modeler.name.length === 0) {
+      if (this.action.name.length === 0) {
         return;
       }
 
-      await post("/workspace/modeler", this.modeler);
+      await post("/workspace/action", this.action);
       emitAppEvent(
         "LOG",
-        `Successfully updated modeller: ${this.modeler.name}!`
+        `Successfully updated modeller: ${this.action.name}!`
       );
       this.params.reload();
     },
@@ -54,26 +55,22 @@ export default {
     getTabs() {
       return [
         {
-          title: "Create / Update Object Rules",
+          title: "Run script if",
           ruleKey: "update",
         },
         {
-          title: "Mapper",
+          title: "Script",
           ruleKey: "map",
         },
-        {
-          title: "Visual",
-          ruleKey: null,
-        }
       ];
     },
     onAppearanceHTMLChanged(html) {
       console.log("onAppearanceHTMLChanged", html);
-      this.modeler.appearanceHTML = html;
+      this.action.appearanceHTML = html;
     },
   },
   mounted() {
-    this.fetchModeler().then(() => {
+    this.fetchAction().then(() => {
       this.onTabSelected(0);
     });
   },
@@ -82,10 +79,10 @@ export default {
 
 <template>
   <div class="panel">
-    <div id="edit-modeler" class="left-bar" v-if="modeler">
-      <h4>EDIT MODELER</h4>
+    <div id="edit-action" class="left-bar" v-if="action">
+      <h4>EDIT ACTION</h4>
       <div class="input-wrapper">
-        <input type="text" v-model="modeler.name" />
+        <input type="text" v-model="action.name" />
       </div>
       <button v-on:click="handleSave">Save changes</button>
 
@@ -95,19 +92,14 @@ export default {
         :max="500"
       ></DraggableComponent>
     </div>
-    <div class="right-bar flex" v-if="modeler">
+    <div class="right-bar flex" v-if="action">
       <TabBar :tabs="getTabs()" :onTabSelected="onTabSelected"></TabBar>
       <div class="code-wrapper flex">
         <CodeEditor
           v-if="tabIndex <= 1"
-          v-model="modeler.rules[ruleKey]"
+          v-model="action.statement"
           class="botwerk-code-editor"
         ></CodeEditor>
-        <ObjectVisualizer
-          :appearanceHTML="modeler.appearanceHTML"
-          :onChanged="onAppearanceHTMLChanged"
-          v-if="tabIndex === 2"
-        />
       </div>
     </div>
   </div>

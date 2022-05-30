@@ -1,4 +1,4 @@
-const { getWorkspace, saveWorkspace } = require('../services/workspaceService');
+const { getWorkspace, saveWorkspace } = require('./workspace/workspaceService');
 const { emit } = require('./eventHandler');
 
 function updateObjectInClients(clients, modeler, content) {
@@ -30,6 +30,7 @@ function updateObjectInClients(clients, modeler, content) {
       }
 
       if (isNewObject || compareFrom !== compareTo) {
+        client.objects[obj._id]._updatedAt = Date.now();
         saveWorkspace();
       }
     } catch (e) {

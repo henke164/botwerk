@@ -1,6 +1,7 @@
 <script setup>
 import ClientList from "./components/ClientList.vue";
 import ModelerList from "./components/ModelerList.vue";
+import ActionList from "./components/ActionList.vue";
 import { get } from "../../services/apiService";
 import {
   addAppEventListener,
@@ -52,6 +53,12 @@ export default {
       :selectItem="handleItemSelected"
     />
     <ModelerList
+      :reload="reload"
+      :workspace="this.workspace"
+      :selectedItem="selectedItem"
+      :selectItem="handleItemSelected"
+    />
+    <ActionList
       :reload="reload"
       :workspace="this.workspace"
       :selectedItem="selectedItem"
