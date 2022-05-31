@@ -2,7 +2,8 @@ const WebSocket = require("ws");
 const { v4: uuidv4 } = require('uuid');
 const { emit } = require('./eventHandler');
 
-let connections = {};
+let botwerkConnections = [];
+let clientConnections = {};
 
 async function startWebsocket(server) {
   const ws = new WebSocket.Server({
@@ -19,21 +20,25 @@ async function startWebsocket(server) {
   ws.on("connection", (socket, req) => {
     console.log("Incoming connection!");
     const [_path, params] = req?.url?.split("?");
-    const socketId = uuidv4();
-    const channel = params;
-  
-    if (!connections[channel]) {
-      connections[channel] = {};
-    }
-
-    connections[channel][socketId] = socket;
+    const paramsParts = params.split('=');
+    const channel = paramsParts[0];
+    socket.channel = channel;
     
+    if (channel === 'botwerk') {
+      botwerkConnections.push(socket);
+    } else if (channel === 'client') {
+      socket.clientId = paramsParts[1];
+      clientConnections[socket.clientId] = socket;
+    } else {
+      return;
+    }
+        
     socket.on('message', (pkg) => {
       let {
         type,
+        socketIndex,
         content,
       } = JSON.parse(pkg);
-
       try {
         content = JSON.parse(content);
       } catch {
@@ -42,9 +47,9 @@ async function startWebsocket(server) {
 
       emit('onSocketEvent', {
         type,
+        socketIndex,
         channel,
         content,
-        socketId
       });
     });
 
@@ -52,11 +57,13 @@ async function startWebsocket(server) {
       emit('onSocketEvent', {
         type: 'SOCKET_DISCONNECTED',
         channel,
-        socketId,
       });
-      delete connections[channel][socketId];
-      if (Object.keys(connections[channel]).length === 0) {
-        delete connections[channel];
+
+      if (channel === 'botwerk') {
+        const index = botwerkConnections.indexOf(socket);
+        botwerkConnections.splice(index, 1);
+      } else {
+        delete clientConnections[socket.clientId];
       }
     });
   });
@@ -64,17 +71,18 @@ async function startWebsocket(server) {
   return ws;
 };
 
-function broadcast(channel, pkg) {
-  if (!connections[channel]) {
-    return;
+function sendToBotwerk(pkg) {
+  for (const socket of botwerkConnections) {
+    socket.send(JSON.stringify(pkg));
   }
+}
 
-  for (const key of Object.keys(connections[channel])) {
-    connections[channel][key].send(JSON.stringify(pkg));
-  }
+function getClientConnection(clientId) {
+  return clientConnections[clientId];
 }
 
 module.exports = {
   startWebsocket,
-  broadcast,
+  getClientConnection,
+  sendToBotwerk,
 };

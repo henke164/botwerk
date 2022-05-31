@@ -7,14 +7,15 @@ function connectWebsocket(host) {
   connection = new WebSocket(host);
   connection.onmessage = (pkg) => {
     try {
-      const { type, socketId, clientId, content } = JSON.parse(
+      const { type, socketIndex, clientId, content } = JSON.parse(
         pkg.data.toString()
       );
       emitAppEvent(type, content, { 
-        socketId,
+        socketIndex,
         clientId,
       });
     } catch (e) {
+      emitAppEvent("LOG", "Error occured on socket message:" + JSON.stringify(pkg));
       emitAppEvent("LOG", e.message);
     }
   };

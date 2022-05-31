@@ -20,37 +20,34 @@ export default {
       } else {
         this.websockets[this.selectedLogId] = [];
       }
+      this.selectedLog = [];
+
     },
   },
   mounted() {
     addAppEventListener("SOCKET_CONNECTED", (content, options) => {
-      const { clientId, socketId } = options;
-      this.websockets[socketId] = [`Socket ${socketId} connected`];
-    });
-
-    addAppEventListener("SOCKET_DISCONNECTED", (content, options) => {
-      const { clientId, socketId } = options;
-      delete this.websockets[socketId];
+      const { clientId, socketIndex } = options;
+      this.websockets[socketIndex] = [`Socket ${socketIndex} connected`];
     });
 
     addAppEventListener("MESSAGE_RECEIVED", (content, options) => {
-      const { clientId, socketId } = options;
-      if (!this.websockets[socketId]) {
-        this.websockets[socketId] = [];
+      const { clientId, socketIndex } = options;
+      if (!this.websockets[socketIndex]) {
+        this.websockets[socketIndex] = [];
       }
-      this.websockets[socketId].push(
+      this.websockets[socketIndex].push(
         `<span style='color: #e14537'>▼</span> ${JSON.stringify(content)}`
       );
     });
 
     addAppEventListener("MESSAGE_SENT", (content, options) => {
-      const websocketId = options.id;
+      const socketIndex = options.socketIndex;
 
-      if (!this.websockets[websocketId]) {
-        this.websockets[websocketId] = [];
+      if (!this.websockets[socketIndex]) {
+        this.websockets[socketIndex] = [];
       }
-      this.websockets[websocketId].push(
-        `<span style='color: #e14537'>▲</span> ${JSON.stringify(content)}`
+      this.websockets[socketIndex].push(
+        `<span style='color: #77C66E'>▲</span> ${JSON.stringify(content)}`
       );
     });
 
@@ -85,7 +82,10 @@ export default {
           data-toggle="tooltip"
           :title="socket"
           :class="selectedLog === this.websockets[key] ? 'active' : ''"
-          v-on:click="() => (selectedLog = this.websockets[key])"
+          v-on:click="() => {
+            selectedLogId = key;
+            selectedLog = this.websockets[key];
+          }"
         >
           Websocket {{ index + 1 }}
         </a>

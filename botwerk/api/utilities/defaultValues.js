@@ -64,7 +64,7 @@ const defaultAction = {
   id: uuidv4(),
   name: "New Action",
   trigger: "",
-  code: "",
+  script: "",
 };
 
 const defaultClient = {

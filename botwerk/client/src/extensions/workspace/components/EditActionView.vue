@@ -51,7 +51,7 @@ export default {
           title: "Trigger",
         },
         {
-          title: "Action",
+          title: "Script",
         },
       ];
     }
@@ -89,7 +89,7 @@ export default {
         ></CodeEditor>
         <CodeEditor
           v-if="tabIndex === 1"
-          v-model="action.code"
+          v-model="action.script"
           class="botwerk-code-editor"
         ></CodeEditor>
       </div>

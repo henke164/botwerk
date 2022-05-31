@@ -81,6 +81,9 @@ export default {
   <div class="panel">
     <div class="left-bar" v-if="client">
       <h4>EDIT CLIENT</h4>
+      <label>Id</label>
+      <div class="id">{{client.id}}</div>
+      <label>Name</label>
       <div class="input-wrapper">
         <input type="text" v-model="client.name" />
       </div>
@@ -129,6 +132,11 @@ input[type="text"] {
   flex: 1;
   width: 100%;
   border: 1px solid #595c76 !important;
+}
+
+.id {
+  font-size: 10px;
+  margin-bottom: 10px;
 }
 
 .component {

@@ -20,17 +20,17 @@ function modifyWebSocketConstructor() {
     wsAddListener(ws, 'message', function(event) {
       window.botwerk.socket.send(JSON.stringify({
         type: "MESSAGE_RECEIVED",
-        clientId: botwerk.clientId,
+        socketIndex: sockets.indexOf(ws),
         content: event.data,
       }));
     });
 
+    sockets.push(ws);
+
     window.botwerk.socket.send(JSON.stringify({
       type: "SOCKET_CONNECTED",
-      clientId: botwerk.clientId,
+      socketIndex: sockets.indexOf(ws),
     }));
-
-    sockets.push(ws);
     return ws;
   }.bind();
 
@@ -44,6 +44,7 @@ function modifyWebSocketConstructor() {
       if (this !== window.botwerk.socket) {
         window.botwerk.socket.send(JSON.stringify({
           type: "MESSAGE_SENT",
+          socketIndex: sockets.indexOf(this),
           content: data,
         }));
       }
@@ -54,9 +55,10 @@ function modifyWebSocketConstructor() {
   };
 }
 
+var clientId = document.getElementById('botwerk-clientId').value;
+console.log(document.getElementById('botwerk-clientId'));
 window.botwerk = {
-  clientId: document.getElementById('botwerk-clientId'),
-  socket: new WebSocket("ws://localhost:3001/websockets?client")
+  socket: new WebSocket("ws://localhost:3001/websockets?client=" + clientId)
 }
 
 window.botwerk.socket.onopen = function () {
@@ -66,8 +68,12 @@ window.botwerk.socket.onopen = function () {
   }));
 }
 
-window.botwerk.socket.onmessage = function (message) {
-  console.log('message', message);
+window.botwerk.socket.onmessage = function (pkg) {
+  const { socketIndex, message } = JSON.parse(pkg.data);
+  if (!sockets[socketIndex]) {
+    return;
+  }
+  sockets[socketIndex].send(message);
 }
 
 modifyWebSocketConstructor();

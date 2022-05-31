@@ -3,9 +3,10 @@ const routes = require(`./routes/index.js`);
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
-const { startWebsocket, broadcast } = require('./services/websocket');
+const { startWebsocket, sendToBotwerk } = require('./services/websocket');
 const { addEventListener } = require('./services/eventHandler');
 const { updateObjectDataFromEvent } = require('./services/objectBuilder.js');
+const { runTimedActions, startActionListener } = require('./services/actionHandler.js');
 
 const app = express();
 const port = 3001;
@@ -34,7 +35,7 @@ addEventListener('onSocketEvent', (data) => {
   }
 
   if (data.channel === 'client') {
-    broadcast('botwerk', data);
+    sendToBotwerk(data);
     if (data.type === 'MESSAGE_RECEIVED') {
       updateObjectDataFromEvent(data);
     }
@@ -42,12 +43,18 @@ addEventListener('onSocketEvent', (data) => {
 });
 
 addEventListener('onObjectCreated', ({ clientId }) => {
-  broadcast('botwerk', {
+  sendToBotwerk({
     type: 'OBJECT_CREATED',
     clientId
   });
 });
 
-addEventListener('LOG', (data) => {
-  console.log("Error log", data);
+addEventListener('LOG', (content) => {
+  sendToBotwerk({
+    type: 'LOG',
+    content
+  });
 });
+
+startActionListener();
+setInterval(runTimedActions, 1000);

@@ -56,7 +56,6 @@ function getClientsUsingModeler(clients, modelerId) {
 
 function updateObjectDataFromEvent(ev) {
   const { content } = ev;
-  console.log("Updating content", content);
   if (!content) {
     return;
   }
