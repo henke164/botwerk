@@ -76,7 +76,7 @@ function updateObjectDataFromEvent(ev) {
       emit("LOG", e.message);
     }
 
-    var res = onSocketPacketReceived(socketIndex, content);
+    var res = isUpdateObjectRequest(socketIndex, content);
     if (res) {
       updateObjectInClients(clients, modeler, content);
     }

@@ -4,7 +4,7 @@ const {
   getAllModelers,
   removeModeler,
   updateModeler,
-} = require('../../services/workspace/workspaceService');
+} = require('../../services/workspace/modelerService');
 const router = express.Router();
 
 router.get("/:id", (req, res) => {

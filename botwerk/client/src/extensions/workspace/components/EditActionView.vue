@@ -2,7 +2,6 @@
 import CodeEditor from "simple-code-editor";
 import TabBar from "../../../components/TabBar.vue";
 import DraggableComponent from "../../../components/DraggableComponent.vue";
-import ObjectVisualizer from "./EditObjectVisualizer.vue";
 
 import { get, post } from "../../../services/apiService";
 import { emitAppEvent } from "../../../services/appEventHandler";
@@ -13,7 +12,6 @@ export default {
   data() {
     return {
       action: null,
-      ruleKey: null,
       tabIndex: 0,
     };
   },
@@ -41,33 +39,22 @@ export default {
       }
 
       await post("/workspace/action", this.action);
-      emitAppEvent(
-        "LOG",
-        `Successfully updated modeller: ${this.action.name}!`
-      );
+      emitAppEvent("LOG", `Successfully updated action: ${this.action.name}!`);
       this.params.reload();
     },
     onTabSelected(index) {
-      const tab = this.getTabs()[index];
       this.tabIndex = index;
-      this.ruleKey = tab.ruleKey;
     },
     getTabs() {
       return [
         {
-          title: "Run script if",
-          ruleKey: "update",
+          title: "Trigger",
         },
         {
-          title: "Script",
-          ruleKey: "map",
+          title: "Action",
         },
       ];
-    },
-    onAppearanceHTMLChanged(html) {
-      console.log("onAppearanceHTMLChanged", html);
-      this.action.appearanceHTML = html;
-    },
+    }
   },
   mounted() {
     this.fetchAction().then(() => {
@@ -96,8 +83,13 @@ export default {
       <TabBar :tabs="getTabs()" :onTabSelected="onTabSelected"></TabBar>
       <div class="code-wrapper flex">
         <CodeEditor
-          v-if="tabIndex <= 1"
-          v-model="action.statement"
+          v-if="tabIndex === 0"
+          v-model="action.trigger"
+          class="botwerk-code-editor"
+        ></CodeEditor>
+        <CodeEditor
+          v-if="tabIndex === 1"
+          v-model="action.code"
           class="botwerk-code-editor"
         ></CodeEditor>
       </div>
@@ -109,7 +101,7 @@ export default {
 input[type="text"] {
   flex: 1;
   width: 100%;
-  border: 1px solid #595c76!important;
+  border: 1px solid #595c76 !important;
 }
 
 .input-wrapper {

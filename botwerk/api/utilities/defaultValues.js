@@ -38,7 +38,7 @@ const defaultModeler = {
   rules: {
     update: 
 `// Define rules that describes if the packet creates or updates an object. 
-function onSocketPacketReceived(socketIndex, packet) {
+function isUpdateObjectRequest(socketIndex, packet) {
     if (socketIndex !== 0) {
         return false;
     }
@@ -63,7 +63,7 @@ function mapObject(packet) {
 const defaultAction = {
   id: uuidv4(),
   name: "New Action",
-  statement: "",
+  trigger: "",
   code: "",
 };
 
