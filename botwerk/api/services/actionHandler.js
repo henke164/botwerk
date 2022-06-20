@@ -31,7 +31,7 @@ function startActionListener() {
         eval(action.trigger);
         shouldRun = shouldTriggerFromPacket(socketIndex, content);
       } catch (e) {
-        console.log(e.message);
+        console.log(`Error occured in action ${action.id}`, e.message);
         return;
       }
 
@@ -84,7 +84,6 @@ function runTimedActions() {
     const clients = workspace.clients.filter(c => c.actions.includes(action.id));
     clients.forEach(client => {
       const socket = getClientConnection(client.id);
-      console.log('socket', socket);
       if (!socket) {
         return;
       }

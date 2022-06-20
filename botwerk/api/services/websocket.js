@@ -34,23 +34,28 @@ async function startWebsocket(server) {
     }
         
     socket.on('message', (pkg) => {
-      let {
-        type,
-        socketIndex,
-        content,
-      } = JSON.parse(pkg);
       try {
-        content = JSON.parse(content);
-      } catch {
-        console.log("Package is not json");
-      }
+        let {
+          type,
+          socketIndex,
+          content,
+        } = JSON.parse(pkg);
+        try {
+          content = JSON.parse(content);
+        } catch {
+          console.log("Package is not json");
+        }
 
-      emit('onSocketEvent', {
-        type,
-        socketIndex,
-        channel,
-        content,
-      });
+        emit('onSocketEvent', {
+          type,
+          socketIndex,
+          channel,
+          content,
+        });
+      } catch(e) {
+        console.log('Packet error', pkg.toString());
+        console.log('Error', e.message);
+      }
     });
 
     socket.on("close", () => {

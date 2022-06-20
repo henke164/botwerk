@@ -1,6 +1,6 @@
 const { v4: uuidv4 } = require('uuid');
 const fs = require('fs');
-const { defaultWorkspace, defaultModeler } = require('../../utilities/defaultValues');
+const { defaultWorkspace } = require('../../utilities/defaultValues');
 
 const cachePath = __dirname + "/../workspace-cache.json";
 let currentWorkspace;
